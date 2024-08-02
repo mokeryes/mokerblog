@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="计数型信号量好比一个停车场，停车场里面有 10 个车位，当车进入的时候，车位被占用一个，计数器减一；车开出去的时候，车位被是释放，计数器加一。这就是计数型的信号量。当信号量为零时，则表名停车场内已经没有可用车位。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="16. 计数型信号量（Count Semaphore）">
+<meta property="og:url" content="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/16.%20%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88Count%20Semaphore%EF%BC%89/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="计数型信号量好比一个停车场，停车场里面有 10 个车位，当车进入的时候，车位被占用一个，计数器减一；车开出去的时候，车位被是释放，计数器加一。这就是计数型的信号量。当信号量为零时，则表名停车场内已经没有可用车位。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/zElements/16._%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88Count_Semaphore%EF%BC%89-20240616004350117.webp">
+<meta property="article:published_time" content="2024-08-02T18:41:52.758Z">
+<meta property="article:modified_time" content="2024-08-02T18:41:52.759Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="嵌入式">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="FreeRTOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/zElements/16._%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88Count_Semaphore%EF%BC%89-20240616004350117.webp">
+
+
+<link rel="canonical" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/16.%20%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88Count%20Semaphore%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/16.%20%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88Count%20Semaphore%EF%BC%89/","path":"2024/08/03/Embeded/ESP32/FreeRTOS/16. 计数型信号量（Count Semaphore）/","title":"16. 计数型信号量（Count Semaphore）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>16. 计数型信号量（Count Semaphore） | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F"><span class="nav-number">1.</span> <span class="nav-text">计数型信号量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E5%87%BD%E6%95%B0%E6%96%87%E6%A1%A3"><span class="nav-number">2.</span> <span class="nav-text">官方函数文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xSemaphoreCreateCounting"><span class="nav-number">3.</span> <span class="nav-text">xSemaphoreCreateCounting()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#uxSemaphoreGetCount"><span class="nav-number">4.</span> <span class="nav-text">uxSemaphoreGetCount()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">4.1.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA"><span class="nav-number">4.2.</span> <span class="nav-text">示例输出</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/16.%20%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88Count%20Semaphore%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="16. 计数型信号量（Count Semaphore） | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          16. 计数型信号量（Count Semaphore）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:41:52" itemprop="dateCreated datePublished" datetime="2024-08-03T02:41:52+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FreeRTOS/" itemprop="url" rel="index"><span itemprop="name">FreeRTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="计数型信号量"><a href="#计数型信号量" class="headerlink" title="计数型信号量"></a>计数型信号量</h1><p>好比一个停车场，停车场里面有 10 个车位，当车进入的时候，车位被占用一个，计数器减一；车开出去的时候，车位被是释放，计数器加一。这就是计数型的信号量。当信号量为零时，则表名停车场内已经没有可用车位。</p>
+<hr>
+<span id="more"></span>
+<h1 id="官方函数文档"><a href="#官方函数文档" class="headerlink" title="官方函数文档"></a>官方函数文档</h1><blockquote>
+<p>4.11 uxSemaphoreGetCount()</p>
+</blockquote>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;234&amp;selection&#x3D;2,0,4,21|FreeRTOS_Reference_Manual_V10.0.0, page 234]]</p>
+<blockquote>
+<p>4.4 xSemaphoreCreateCounting()</p>
+</blockquote>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;218&amp;selection&#x3D;2,0,4,26|FreeRTOS_Reference_Manual_V10.0.0, page 218]]</p>
+<hr>
+<h1 id="xSemaphoreCreateCounting"><a href="#xSemaphoreCreateCounting" class="headerlink" title="xSemaphoreCreateCounting()"></a><code>xSemaphoreCreateCounting()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;semphr.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">SemaphoreHandle_t <span class="title function_">xSemaphoreCreateCounting</span><span class="params">( UBaseType_t uxMaxCount, UBaseType_t uxInitialCount )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>创建一个计数型信号量，返回一个信号量句柄。</li>
+<li>RAM needed.</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>uxMaxCount:</code> 计数型信号量的计数最大值。</li>
+<li><code>uxInitialCount:</code>创建信号量时赋予的计数值。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>NULL:</code>如果没有足够的堆内存，则信号量创建失败。</li>
+<li><code>Any other value:</code>信号量成功创建。</li>
+</ul>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li>计数型信号量一般在两种情况下使用：<ol>
+<li><strong>计算事件次数（Counting Events）：</strong><br> 在这种情况，每次事件发生时，事件处理任务都会“发出( Give )”信号量，而处理任务每次都会“获取( Take )”信号量。<br> (<code>event handler -&gt; Give, task handler -&gt; take</code>)<br> 信号量的计数每次会在“发出( Give )”时增加；会在每次“获取( Take )”时减少。<br> 因此，计数值是已发生事件数和已处理事件数之间的差值。<br> 用于计数事件的信号量的初始值应该为零，因为在创建信号之前不会对任何事件计数。</li>
+<li><strong>资源管理（Resource management）：</strong><br> 在这种情况下，计数器的值代表资源可用数量。<br> 为了获取对资源的控制权，任务必须首先“获取( Take )”信号量。“获取”操作会减少信号量的值，当计数值到达 0 时，代表没有资源可用，所以再进行“获取”操作会失败。<br> 当任务完成并拥有资源时，它必须“发出( Give )”个信号量。“发出”操作会增加信号量的值，为了保证未来的“获取”操作成功执行。<br> 创建资源管理型的信号量，应该在一开始将最大值定义为资源库存量。</li>
+</ol>
+</li>
+</ul>
+<h1 id="uxSemaphoreGetCount"><a href="#uxSemaphoreGetCount" class="headerlink" title="uxSemaphoreGetCount()"></a><code>uxSemaphoreGetCount()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;semphr.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">UBaseType_t <span class="title function_">uxSemaphoreGetCount</span><span class="params">( SemaphoreHandle_t xSemaphore )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>取得计数型信号量的数目。二进制信号量（Binary Semaphore）只能拥有一个计数（ 1 或 0）。技术型信号量拥有一个可以从 0 到 无限 的计数。</li>
+<li>每次取得一个信号量，则计数型信号量的值会减一。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xSemaphore:</code>信号量的句柄。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li>返回信号量句柄中信号的计数。</li>
+</ul>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><blockquote>
+<p>此代码模拟了一个停车场（资源管理型），两个任务函数分别模拟车进车出，用信号量当前值表示为停车场剩余空间，用信号量最大值表示停车场总共空间。</p>
+</blockquote>
+<figure class="highlight c"><figcaption><span>title:main.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/queue.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/semphr.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> SemaphoreHandle_t semaphore_handle;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">car_in</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> empty_space = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">		<span class="comment">// 获取停车场剩余空间</span></span><br><span class="line">        empty_space = uxSemaphoreGetCount(semaphore_handle);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;empty_space = %d\n&quot;</span>, empty_space);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 从停车场拿走一个空间用来停车 （ Take ）</span></span><br><span class="line">		xSemaphoreTake(semaphore_handle, portMAX_DELAY);</span><br><span class="line">        <span class="keyword">if</span> (semaphore_state == pdPASS) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;[CAR IN]: One car in.\n&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;[CAR IN]: No more empty space.\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        vTaskDelay(pdMS_TO_TICKS(<span class="number">1000</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">car_out</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        vTaskDelay(pdMS_TO_TICKS(<span class="number">6000</span>));</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 车要走了，所以给停车场还回去一个车位（ Give ）</span></span><br><span class="line">        xSemaphoreGive(semaphore_handle);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[CAR OUT]: One car out\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 创建技术型信号量，初始值为10，最大值为10。即 停车场初始有 10 个空位，一共有 10 个车位</span></span><br><span class="line">    semaphore_handle = xSemaphoreCreateCounting(<span class="number">10</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    xTaskCreate(car_in, <span class="string">&quot;Car In&quot;</span>, <span class="number">2048</span>, (<span class="type">void</span> *)semaphore_handle, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">    xTaskCreate(car_out, <span class="string">&quot;car Out&quot;</span>, <span class="number">2048</span>, (<span class="type">void</span> *)semaphore_handle, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="示例输出"><a href="#示例输出" class="headerlink" title="示例输出"></a>示例输出</h2><p><img src="/zElements/16._%E8%AE%A1%E6%95%B0%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88Count_Semaphore%EF%BC%89-20240616004350117.webp" alt="16._计数型信号量（Count_Semaphore）-20240616004350117.webp"><br>程序输出结果表明，停车场运行正常，车停满之后就等待位置空出来，新的车再进去。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+              <a href="/tags/ESP32/" rel="tag"># ESP32</a>
+              <a href="/tags/FreeRTOS/" rel="tag"># FreeRTOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/15.%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88binary%20semaphore%EF%BC%89/" rel="prev" title="15. 二进制信号量（binary semaphore）">
+                  <i class="fa fa-angle-left"></i> 15. 二进制信号量（binary semaphore）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/18.%20%E9%80%92%E5%BD%92%E4%BA%92%E6%96%A5%E9%94%81/" rel="next" title="18. 递归互斥锁">
+                  18. 递归互斥锁 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

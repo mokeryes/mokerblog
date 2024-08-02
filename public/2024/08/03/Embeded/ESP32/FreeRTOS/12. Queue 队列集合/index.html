@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="官方文档参考 4.6 Receiving From Multiple Queues">
+<meta property="og:type" content="article">
+<meta property="og:title" content="12. Queue 队列集合">
+<meta property="og:url" content="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/12.%20Queue%20%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="官方文档参考 4.6 Receiving From Multiple Queues">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/zElements/12._Queue_%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88-20240614181644834.webp">
+<meta property="article:published_time" content="2024-08-02T18:41:38.426Z">
+<meta property="article:modified_time" content="2024-08-02T18:41:38.427Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="嵌入式">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="FreeRTOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/zElements/12._Queue_%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88-20240614181644834.webp">
+
+
+<link rel="canonical" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/12.%20Queue%20%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/12.%20Queue%20%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88/","path":"2024/08/03/Embeded/ESP32/FreeRTOS/12. Queue 队列集合/","title":"12. Queue 队列集合"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>12. Queue 队列集合 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">官方文档参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E5%87%BD%E6%95%B0%E5%8F%82%E8%80%83"><span class="nav-number">2.</span> <span class="nav-text">官方文档函数参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88-Queue-Set"><span class="nav-number">3.</span> <span class="nav-text">队列集合 Queue Set</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xQueueCreateSet"><span class="nav-number">3.1.</span> <span class="nav-text">xQueueCreateSet()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xQueueAddToSet"><span class="nav-number">4.</span> <span class="nav-text">xQueueAddToSet()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xQueueSelectFromSet"><span class="nav-number">5.</span> <span class="nav-text">xQueueSelectFromSet()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.1.</span> <span class="nav-text">代码示例</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/12.%20Queue%20%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="12. Queue 队列集合 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          12. Queue 队列集合
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:41:38" itemprop="dateCreated datePublished" datetime="2024-08-03T02:41:38+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FreeRTOS/" itemprop="url" rel="index"><span itemprop="name">FreeRTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="官方文档参考"><a href="#官方文档参考" class="headerlink" title="官方文档参考"></a>官方文档参考</h1><blockquote>
+<p>4.6 Receiving From Multiple Queues</p>
+</blockquote>
+<span id="more"></span>
+<p>[[FreeRTOS_Mastering_the_FreeRTOS_Real_Time_Kernel-A_Hands-On_Tutorial_Guide.pdf#page&#x3D;158&amp;selection&#x3D;5,0,7,30|FreeRTOS_Mastering_the_FreeRTOS_Real_Time_Kernel-A_Hands-On_Tutorial_Guide, page 158]]</p>
+<h1 id="官方文档函数参考"><a href="#官方文档函数参考" class="headerlink" title="官方文档函数参考"></a>官方文档函数参考</h1><blockquote>
+<p>164 3.4 xQueueCreateSet()</p>
+</blockquote>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;164&amp;selection&#x3D;0,3,4,17|FreeRTOS_Reference_Manual_V10.0.0, page 164]]</p>
+<hr>
+<h1 id="队列集合-Queue-Set"><a href="#队列集合-Queue-Set" class="headerlink" title="队列集合 Queue Set"></a>队列集合 Queue Set</h1><p><img src="/zElements/12._Queue_%E9%98%9F%E5%88%97%E9%9B%86%E5%90%88-20240614181644834.webp" alt="12._Queue_队列集合-20240614181644834.webp"></p>
+<ul>
+<li>多个任务把数据写进各自的 Queue 中，然后一个任务分别从这个队列中读取数据。</li>
+<li>FreeRTOS提供一个函数接口，可以让读取任务从集合中取得对应队列的句柄，然后再从对应的队列中读出数据。</li>
+</ul>
+<h2 id="xQueueCreateSet"><a href="#xQueueCreateSet" class="headerlink" title="xQueueCreateSet()"></a><code>xQueueCreateSet()</code></h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;queue.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">QueueSetHandle <span class="title function_">xQueueCreateSet</span><span class="params">( <span class="type">const</span> UBaseType_t uxEventQueueLength )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>创建一个队列集合</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>uxEventQueueLength:</code>需要加进队列集合的<strong>总长度</strong>。例如 Queue1 长度为 <strong>5</strong> , Queue2 长度为 <strong>2</strong> ，则此参数应赋值为 <strong>7</strong>。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>NULL:</code>创建队列集合失败。</li>
+<li><code>其他：</code>创建队列集合成功，返回队列集合。</li>
+</ul>
+<h1 id="xQueueAddToSet"><a href="#xQueueAddToSet" class="headerlink" title="xQueueAddToSet()"></a><code>xQueueAddToSet()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;task.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">baseType_t <span class="title function_">xQueueAddToSet</span><span class="params">( QueueSetMemberHandle_t xQueueOrSemaphore, QueueSetHandle_t xQueueSet )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>将队列加入到队列集合。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xQueueOrSemaphore:</code>要加入队列集合的队列。</li>
+<li><code>xQueueSet:</code>队列集合。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>pdPASS:</code>添加成功。</li>
+<li><code>pdFAIL:</code>添加失败。</li>
+</ul>
+<h1 id="xQueueSelectFromSet"><a href="#xQueueSelectFromSet" class="headerlink" title="xQueueSelectFromSet()"></a><code>xQueueSelectFromSet()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;task.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">QueueSetMemberHandle_t <span class="title function_">xQueueSelectFromSet</span><span class="params">( QueueSetHandle_t xQueueSet, <span class="type">const</span> TickType_t xTicksToWait )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>从队列集合中选择由数据的队列。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xQueueSet:</code>队列集合。</li>
+<li><code>xTickToWait:</code>等待时间。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>NULL:</code> 超过等待时间后，仍不存在由数据的队列或信号。</li>
+<li><code>Any:</code>队列句柄。</li>
+<li><code>other value:</code>包含数据的队列集合，或者包含信号的句柄(转换为<code>QueueSetMemberHandle_t</code>类型)。</li>
+</ul>
+<h2 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_chip_info.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/queue.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">sender_task_1</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    QueueHandle_t QHandle = (QueueHandle_t)pvPara;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> numToSend = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        xQueueSendToBack(QHandle, &amp;numToSend, <span class="number">0</span>); </span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">sender_task_2</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    QueueHandle_t QHandle = (QueueHandle_t)pvPara;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> numToSend = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        xQueueSendToBack(QHandle, &amp;numToSend, <span class="number">0</span>); </span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">receiver_task</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 创建消息队列集合，接收形参赋值</span></span><br><span class="line">    QueueSetHandle_t QSetHandle = (QueueSetHandle_t)pvPara;</span><br><span class="line">	<span class="comment">// 创建消息队列集合成员句柄</span></span><br><span class="line">    QueueSetMemberHandle_t queue_data;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> numToReceive = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">		<span class="comment">// 选出有消息的队列，将队列句柄赋值给 queue_data	</span></span><br><span class="line">        queue_data = xQueueSelectFromSet(QSetHandle, portMAX_DELAY);</span><br><span class="line">		<span class="comment">// 从 queue_data 队列句柄接收消息</span></span><br><span class="line">        xQueueReceive(queue_data, &amp;numToReceive, portMAX_DELAY);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[RECEIVER]: %d\n&quot;</span>, numToReceive);</span><br><span class="line">        vTaskDelay(<span class="number">100</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 创建两个消息队列</span></span><br><span class="line">    QueueHandle_t QHandle1 = xQueueCreate(<span class="number">5</span>, <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">    QueueHandle_t QHandle2 = xQueueCreate(<span class="number">5</span>, <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">	<span class="comment">// 创建消息队列集合</span></span><br><span class="line">    QueueSetHandle_t QSetHandle = xQueueCreateSet(<span class="number">5</span>+<span class="number">5</span>);</span><br><span class="line">	<span class="comment">// 将两个消息队列添加到队列集合</span></span><br><span class="line">    xQueueAddToSet(QHandle1, QSetHandle);</span><br><span class="line">    xQueueAddToSet(QHandle2, QSetHandle);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (QHandle1 &amp;&amp; QHandle2 &amp;&amp; QSetHandle) &#123;</span><br><span class="line">        xTaskCreate(sender_task_1, <span class="string">&quot;Sender Task 1&quot;</span>, <span class="number">2048</span>, (<span class="type">void</span> *)QHandle1, <span class="number">2</span>, <span class="literal">NULL</span>);</span><br><span class="line">        xTaskCreate(sender_task_2, <span class="string">&quot;Sender Task 2&quot;</span>, <span class="number">2048</span>, (<span class="type">void</span> *)QHandle2, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">        xTaskCreate(receiver_task, <span class="string">&quot;Receiver Task&quot;</span>, <span class="number">2048</span>, (<span class="type">void</span> *)QSetHandle, <span class="number">3</span>, <span class="literal">NULL</span>); <span class="comment">// 传递给接收函数队列集合句柄</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[MAIN]: Do not have enough memory to create a queue.\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+              <a href="/tags/ESP32/" rel="tag"># ESP32</a>
+              <a href="/tags/FreeRTOS/" rel="tag"># FreeRTOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/11.%20Queue%20%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E5%A4%9A%E8%BF%9B%E5%8D%95%E5%87%BA/" rel="prev" title="11. Queue 消息队列的多进单出">
+                  <i class="fa fa-angle-left"></i> 11. Queue 消息队列的多进单出
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/13.%20%E9%98%9F%E5%88%97%E9%82%AE%E7%AE%B1/" rel="next" title="13. 队列邮箱">
+                  13. 队列邮箱 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

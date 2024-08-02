@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="官方文档参考 79 2.5 uxTaskGetStackHighWaterMark()">
+<meta property="og:type" content="article">
+<meta property="og:title" content="8. Task 堆栈设置和调试">
+<meta property="og:url" content="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/8.%20Task%20%E5%A0%86%E6%A0%88%E8%AE%BE%E7%BD%AE%E5%92%8C%E8%B0%83%E8%AF%95/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="官方文档参考 79 2.5 uxTaskGetStackHighWaterMark()">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/zElements/8._Task_%E5%A0%86%E6%A0%88%E8%AE%BE%E7%BD%AE%E5%92%8C%E8%B0%83%E8%AF%95-20240613135600038.webp">
+<meta property="article:published_time" content="2024-08-02T18:42:42.240Z">
+<meta property="article:modified_time" content="2024-08-02T18:42:42.240Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="堆栈">
+<meta property="article:tag" content="嵌入式">
+<meta property="article:tag" content="FreeRTOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/zElements/8._Task_%E5%A0%86%E6%A0%88%E8%AE%BE%E7%BD%AE%E5%92%8C%E8%B0%83%E8%AF%95-20240613135600038.webp">
+
+
+<link rel="canonical" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/8.%20Task%20%E5%A0%86%E6%A0%88%E8%AE%BE%E7%BD%AE%E5%92%8C%E8%B0%83%E8%AF%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/8.%20Task%20%E5%A0%86%E6%A0%88%E8%AE%BE%E7%BD%AE%E5%92%8C%E8%B0%83%E8%AF%95/","path":"2024/08/03/Embeded/ESP32/FreeRTOS/8. Task 堆栈设置和调试/","title":"8. Task 堆栈设置和调试"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>8. Task 堆栈设置和调试 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">官方文档参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%A0%88%E6%B0%B4%E4%BD%8D%E7%BA%BF%EF%BC%88-HighWaterMark-%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">获取栈水位线（ HighWaterMark ）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">示例代码：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">示例输出：</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/8.%20Task%20%E5%A0%86%E6%A0%88%E8%AE%BE%E7%BD%AE%E5%92%8C%E8%B0%83%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="8. Task 堆栈设置和调试 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          8. Task 堆栈设置和调试
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:42:42" itemprop="dateCreated datePublished" datetime="2024-08-03T02:42:42+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FreeRTOS/" itemprop="url" rel="index"><span itemprop="name">FreeRTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="官方文档参考"><a href="#官方文档参考" class="headerlink" title="官方文档参考"></a>官方文档参考</h1><blockquote>
+<p>79 2.5 uxTaskGetStackHighWaterMark()</p>
+</blockquote>
+<span id="more"></span>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;79&amp;selection&#x3D;0,2,4,29|FreeRTOS_Reference_Manual_V10.0.0, page 79]]</p>
+<hr>
+<h1 id="获取栈水位线（-HighWaterMark-）"><a href="#获取栈水位线（-HighWaterMark-）" class="headerlink" title="获取栈水位线（ HighWaterMark ）"></a>获取栈水位线（ HighWaterMark ）</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;task.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">UBaseType_t <span class="title function_">uxTaskGetStackHighWaterMark</span><span class="params">( TaskHandle_t xTask )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>每个函数都有自己的堆栈，总堆栈大小在任务创建时已经被设置好。此函数作用是获取任务函数还有多少剩余堆栈空间。<br><strong>参数：</strong></li>
+<li><code>xTask:</code> 要获取栈水位线的目标函数的句柄。</li>
+</ul>
+<h2 id="示例代码："><a href="#示例代码：" class="headerlink" title="示例代码："></a>示例代码：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_chip_info.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">task1</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Task1 is running!\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        vTaskDelay(<span class="number">500</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    TaskHandle_t handle_task1;</span><br><span class="line">    xTaskCreate(task1, <span class="string">&quot;Task1&quot;</span>, <span class="number">2048</span>, <span class="literal">NULL</span>, <span class="number">1</span>, &amp;handle_task1);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;high water mark: %d\n&quot;</span>, uxTaskGetStackHighWaterMark(handle_task1));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="示例输出："><a href="#示例输出：" class="headerlink" title="示例输出："></a>示例输出：</h2><p><img src="/zElements/8._Task_%E5%A0%86%E6%A0%88%E8%AE%BE%E7%BD%AE%E5%92%8C%E8%B0%83%E8%AF%95-20240613135600038.webp" alt="8._Task_堆栈设置和调试-20240613135600038.webp"><br>从输出结果可以得到，栈水位线是<code>1352</code>，因为我们设置的栈深是<code>2048</code>，因此次函数最少需要：<br><code>2048 - 1352 = 696</code>，即此函数最少需要<code>696</code>个栈深的内存空间。<br>因为我们使用的是<code>32</code>位的<code>ESP32</code>，在<code>32</code>位<code>CPU</code>中，一个栈深占用<code>4</code>个字节的内存，所以这个函数最少使用：<code>696 * 4 = 2784</code>个字节的内存。[[堆栈宽度与深度]]</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%A0%86%E6%A0%88/" rel="tag"># 堆栈</a>
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+              <a href="/tags/FreeRTOS/" rel="tag"># FreeRTOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/7.%20%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BB%BB%E5%8A%A1%E7%8A%B6%E6%80%81/" rel="prev" title="7. 系统的任务状态">
+                  <i class="fa fa-angle-left"></i> 7. 系统的任务状态
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/9.%20Task%20%E7%9C%8B%E9%97%A8%E7%8B%97/" rel="next" title="9. Task 看门狗">
+                  9. Task 看门狗 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

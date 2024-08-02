@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="GATT （Generic Attribute Profile）通用属性配置文件 协议是 ATT 的上层协议。  GATT 协议下，将蓝牙设备分为以下两种">
+<meta property="og:type" content="article">
+<meta property="og:title" content="7. 蓝牙 GATT 协议">
+<meta property="og:url" content="http://example.com/2024/08/03/Embeded/ESP32/%E8%93%9D%E7%89%99/7.%20%E8%93%9D%E7%89%99%20GATT%20%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="GATT （Generic Attribute Profile）通用属性配置文件 协议是 ATT 的上层协议。  GATT 协议下，将蓝牙设备分为以下两种">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622022850548.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622025500048.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622030757178.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622031254942.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622032108126.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622033520288.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622033713956.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622033853626.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622034008836.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622034231913.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622034807706.webp">
+<meta property="og:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622035308065.webp">
+<meta property="article:published_time" content="2024-08-02T18:45:06.340Z">
+<meta property="article:modified_time" content="2024-08-02T18:45:06.341Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="蓝牙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622022850548.webp">
+
+
+<link rel="canonical" href="http://example.com/2024/08/03/Embeded/ESP32/%E8%93%9D%E7%89%99/7.%20%E8%93%9D%E7%89%99%20GATT%20%E5%8D%8F%E8%AE%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/08/03/Embeded/ESP32/%E8%93%9D%E7%89%99/7.%20%E8%93%9D%E7%89%99%20GATT%20%E5%8D%8F%E8%AE%AE/","path":"2024/08/03/Embeded/ESP32/蓝牙/7. 蓝牙 GATT 协议/","title":"7. 蓝牙 GATT 协议"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>7. 蓝牙 GATT 协议 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GATT-%E5%8D%8F%E8%AE%AE%E4%B8%8B%EF%BC%8C%E5%B0%86%E8%93%9D%E7%89%99%E8%AE%BE%E5%A4%87%E5%88%86%E4%B8%BA%E4%BB%A5%E4%B8%8B%E4%B8%A4%E7%A7%8D"><span class="nav-number">1.</span> <span class="nav-text">GATT 协议下，将蓝牙设备分为以下两种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Service"><span class="nav-number">2.</span> <span class="nav-text">Service</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Service-Declaration%EF%BC%88%E6%9C%8D%E5%8A%A1%E5%A3%B0%E6%98%8E%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">Service Declaration（服务声明）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Service-Include-%EF%BC%88%E6%9C%8D%E5%8A%A1%E5%8C%85%E5%90%AB%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">Service Include （服务包含）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%80%BC"><span class="nav-number">2.3.</span> <span class="nav-text">特征值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%80%BC%E6%9E%84%E6%88%90%EF%BC%9A"><span class="nav-number">2.3.1.</span> <span class="nav-text">特征值构成：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E7%89%B9%E5%BE%81%E5%A3%B0%E6%98%8E%EF%BC%88Characteristic-Declaration%EF%BC%89"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">1. 特征声明（Characteristic Declaration）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E7%89%B9%E5%BE%81%E5%80%BC%E5%A3%B0%E6%98%8E%EF%BC%88Characteristic-Value-Declaration%EF%BC%89"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">2. 特征值声明（Characteristic Value Declaration）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%8F%AF%E9%80%89%E7%9A%84%E8%A1%A5%E5%85%85%E4%BF%A1%E6%81%AF%E7%9A%84%EF%BC%88Descriptor-Declaration%EF%BC%89"><span class="nav-number">2.3.1.3.</span> <span class="nav-text">3. 可选的补充信息的（Descriptor Declaration）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E6%89%A9%E5%B1%95%E5%B1%9E%E6%80%A7%EF%BC%88Extended-Properties%EF%BC%89"><span class="nav-number">2.3.1.3.1.</span> <span class="nav-text">1. 扩展属性（Extended Properties）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E7%94%A8%E6%88%B7%E5%B1%9E%E6%80%A7%EF%BC%88User-Description%EF%BC%89"><span class="nav-number">2.3.1.3.2.</span> <span class="nav-text">2. 用户属性（User Description）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7%EF%BC%88Client-Configure%EF%BC%89"><span class="nav-number">2.3.1.3.3.</span> <span class="nav-text">3. 客户端配置属性（Client Configure）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7"><span class="nav-number">2.3.1.3.4.</span> <span class="nav-text">4. 服务端配置属性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E6%98%BE%E7%A4%BA%E6%A0%BC%E5%BC%8F%E7%89%B9%E5%BE%81%E5%80%BC"><span class="nav-number">2.3.1.3.5.</span> <span class="nav-text">5. 显示格式特征值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-%E9%9B%86%E5%90%88%E5%B1%9E%E6%80%A7%E7%9A%84%E6%A0%BC%E5%BC%8F%EF%BC%88Aggregate-Format%EF%BC%89"><span class="nav-number">2.3.1.3.6.</span> <span class="nav-text">6. 集合属性的格式（Aggregate Format）</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">数据格式</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/03/Embeded/ESP32/%E8%93%9D%E7%89%99/7.%20%E8%93%9D%E7%89%99%20GATT%20%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="7. 蓝牙 GATT 协议 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          7. 蓝牙 GATT 协议
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:45:06" itemprop="dateCreated datePublished" datetime="2024-08-03T02:45:06+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%93%9D%E7%89%99/" itemprop="url" rel="index"><span itemprop="name">蓝牙</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>GATT （Generic Attribute Profile）通用属性配置文件 协议是 ATT 的上层协议。</p>
+</blockquote>
+<h1 id="GATT-协议下，将蓝牙设备分为以下两种"><a href="#GATT-协议下，将蓝牙设备分为以下两种" class="headerlink" title="GATT 协议下，将蓝牙设备分为以下两种"></a>GATT 协议下，将蓝牙设备分为以下两种</h1><span id="more"></span>
+<ol>
+<li><p>Client: 客户端。</p>
+<ul>
+<li>发送命令（command）、请求（request）、确认信息（confirmation）给服务端。</li>
+</ul>
+</li>
+<li><p>Server：服务端。</p>
+<ul>
+<li><p>通过 响应（response）、通知（notification）、指示（indication）返回数据给客户端。</p>
+</li>
+<li><p>数据存储在服务器上，数据格式以一种 Profile （配置文件）的方式存储。</p>
+</li>
+</ul>
+<p> <img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622022850548.webp" alt="6._蓝牙_GATT_协议-20240622022850548.webp"></p>
+</li>
+</ol>
+<p>	</p>
+<h1 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h1><h2 id="Service-Declaration（服务声明）"><a href="#Service-Declaration（服务声明）" class="headerlink" title="Service Declaration（服务声明）"></a>Service Declaration（服务声明）</h2><blockquote>
+<p>3.1 SERVICE DEFINITION</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1474&amp;selection&#x3D;13,0,15,18|Core_v5.4, page 1,474]]</p>
+<p> <img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622025500048.webp" alt="6._蓝牙_GATT_协议-20240622025500048.webp"></p>
+<ol>
+<li>Attribute Handle: 属性句柄</li>
+<li>Attribute Type: 属性格式</li>
+<li>Attribute Value: 属性值</li>
+<li>Attribute Permission: 属性权限</li>
+</ol>
+<p>客户端如果读到 属性类型 是 0x2800，那么就知道这一串数据是  服务声明 的数据，而且 0x2800 指 主服务。<br>读到 UUID（Universally Unique Identifier，通用唯一识别码） 之后，也就知道了当前服务的 UUID，识别码[[Assigned_Numbers.pdf]]。</p>
+<h2 id="Service-Include-（服务包含）"><a href="#Service-Include-（服务包含）" class="headerlink" title="Service Include （服务包含）"></a>Service Include （服务包含）</h2><blockquote>
+<p>3.2 INCLUDE DEFINITION</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1475&amp;selection&#x3D;12,0,14,18|Core_v5.4, page 1,475]]</p>
+<p>表明当前的 Service 可以包含的其他的 Service。</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622030757178.webp" alt="6._蓝牙_GATT_协议-20240622030757178.webp"></p>
+<p>如果读到属性类型中有 0x2802，就表明当前 Service 有包含其他的 Service。</p>
+<ul>
+<li>Include Service Attribute Handle: 起始的句柄位置。</li>
+<li>End Group Handle: 结束句柄的位置。</li>
+<li>Service UUID: 包含服务的 UUID。</li>
+</ul>
+<h2 id="特征值"><a href="#特征值" class="headerlink" title="特征值"></a>特征值</h2><h3 id="特征值构成："><a href="#特征值构成：" class="headerlink" title="特征值构成："></a>特征值构成：</h3><h4 id="1-特征声明（Characteristic-Declaration）"><a href="#1-特征声明（Characteristic-Declaration）" class="headerlink" title="1. 特征声明（Characteristic Declaration）"></a>1. 特征声明（Characteristic Declaration）</h4><blockquote>
+<p>3.3.1 Characteristic declaration</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1476&amp;selection&#x3D;17,0,17,32|Core_v5.4, page 1,476]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622031254942.webp" alt="6._蓝牙_GATT_协议-20240622031254942.webp"></p>
+<p>读取到属性类别是 0x2803，就知道当前的这一块数据描述的是特征值。</p>
+<ul>
+<li>Characteristic Properties: 属性。</li>
+<li>Characteristic Value Attribute Handel: 特征值的句柄。</li>
+<li>Characteristic UUID: 特征值的 UUID。</li>
+</ul>
+<h4 id="2-特征值声明（Characteristic-Value-Declaration）"><a href="#2-特征值声明（Characteristic-Value-Declaration）" class="headerlink" title="2. 特征值声明（Characteristic Value Declaration）"></a>2. 特征值声明（Characteristic Value Declaration）</h4><blockquote>
+<p>3.3.2 Characteristic Value declaration</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1478&amp;selection&#x3D;33,0,33,38|Core_v5.4, page 1,478]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622032108126.webp" alt="6._蓝牙_GATT_协议-20240622032108126.webp"></p>
+<p>在前面获取了特征的 UUID，那么在这里就会再次读到 UUID，然后可以取得相应的特征值。</p>
+<h4 id="3-可选的补充信息的（Descriptor-Declaration）"><a href="#3-可选的补充信息的（Descriptor-Declaration）" class="headerlink" title="3. 可选的补充信息的（Descriptor Declaration）"></a>3. 可选的补充信息的（Descriptor Declaration）</h4><p>此处可能包含 6 个部分。</p>
+<h5 id="1-扩展属性（Extended-Properties）"><a href="#1-扩展属性（Extended-Properties）" class="headerlink" title="1. 扩展属性（Extended Properties）"></a>1. 扩展属性（Extended Properties）</h5><blockquote>
+<p>3.3.3.1 Characteristic Extended Properties</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1479&amp;selection&#x3D;12,0,12,42|Core_v5.4, page 1,479]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622033520288.webp" alt="6._蓝牙_GATT_协议-20240622033520288.webp"></p>
+<p>扩展属性的识别码是 0x2900。</p>
+<h5 id="2-用户属性（User-Description）"><a href="#2-用户属性（User-Description）" class="headerlink" title="2. 用户属性（User Description）"></a>2. 用户属性（User Description）</h5><blockquote>
+<p>3.3.3.2 Characteristic User Description</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1479&amp;selection&#x3D;66,0,66,39|Core_v5.4, page 1,479]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622033713956.webp" alt="6._蓝牙_GATT_协议-20240622033713956.webp"></p>
+<p>用户属性识别码是 0x2901，特征值是一个字符串。</p>
+<h5 id="3-客户端配置属性（Client-Configure）"><a href="#3-客户端配置属性（Client-Configure）" class="headerlink" title="3. 客户端配置属性（Client Configure）"></a>3. 客户端配置属性（Client Configure）</h5><blockquote>
+<p>3.3.3.3 Client Characteristic Configuration</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1480&amp;selection&#x3D;28,0,28,43|Core_v5.4, page 1,480]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622033853626.webp" alt="6._蓝牙_GATT_协议-20240622033853626.webp"><br>客户端属性识别码为 0x2902，可以配置服务端的行为。</p>
+<h5 id="4-服务端配置属性"><a href="#4-服务端配置属性" class="headerlink" title="4. 服务端配置属性"></a>4. 服务端配置属性</h5><blockquote>
+<p>3.3.3.4 Server Characteristic Configuration</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1481&amp;selection&#x3D;23,0,23,43|Core_v5.4, page 1,481]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622034008836.webp" alt="6._蓝牙_GATT_协议-20240622034008836.webp"></p>
+<p>服务端属性识别码为 0x2903。</p>
+<h5 id="5-显示格式特征值"><a href="#5-显示格式特征值" class="headerlink" title="5. 显示格式特征值"></a>5. 显示格式特征值</h5><blockquote>
+<p>3.3.3.5 Characteristic Presentation Format</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1482&amp;selection&#x3D;37,0,37,42|Core_v5.4, page 1,482]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622034231913.webp" alt="6._蓝牙_GATT_协议-20240622034231913.webp"></p>
+<p>这个属性关系到如何解析特征值。</p>
+<h5 id="6-集合属性的格式（Aggregate-Format）"><a href="#6-集合属性的格式（Aggregate-Format）" class="headerlink" title="6. 集合属性的格式（Aggregate Format）"></a>6. 集合属性的格式（Aggregate Format）</h5><blockquote>
+<p>3.3.3.6 Characteristic Aggregate Format</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1484&amp;selection&#x3D;49,0,49,39|Core_v5.4, page 1,484]]</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622034807706.webp" alt="6._蓝牙_GATT_协议-20240622034807706.webp"></p>
+<p>紧接着这一个声明之后，可能又是一个扩展属性的声明，也可能是另外一个 Service 的声明。可以通过属性种类来判断。</p>
+<hr>
+<h1 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h1><blockquote>
+<p>通过查找表的方式，可以读取服务器上，所有服务的数据。</p>
+</blockquote>
+<blockquote>
+<p>2.5 ATTRIBUTE PROTOCOL</p>
+</blockquote>
+<p>[[Core_v5.4.pdf#page&#x3D;1463&amp;selection&#x3D;34,0,36,18|Core_v5.4, page 1,463]]</p>
+<p>所有的数据都遵守这一种格式：</p>
+<p><img src="/zElements/6._%E8%93%9D%E7%89%99_GATT_%E5%8D%8F%E8%AE%AE-20240622035308065.webp" alt="6._蓝牙_GATT_协议-20240622035308065.webp"></p>
+<ul>
+<li>属性句柄，两个字节，从 0001 到 FFFF。</li>
+<li>属性类型</li>
+<li>属性的值</li>
+<li>属性权限<blockquote>
+<p>这个格式即 ATT 属性协议。GATT 赋予了这些属性不同的类型，根据对类型的判断来判断读取的数据是哪一种类型的数据，从而解析属性值的格式和内容，还可以读取下一条数据。</p>
+</blockquote>
+</li>
+</ul>
+<p>对于 GATT 来说，不但是使用 ATT协议 来存储数据，它还使用 APP（Attribute Protocol PDU）协议来发送各种数据。<br>蓝牙的 BLE 就是基于 GATT 的模式，来进行数据的沟通。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ESP32/" rel="tag"># ESP32</a>
+              <a href="/tags/%E8%93%9D%E7%89%99/" rel="tag"># 蓝牙</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/%E8%93%9D%E7%89%99/6.%20%E8%93%9D%E7%89%99%20GAP%20%E5%8D%8F%E8%AE%AE/" rel="prev" title="6. 蓝牙 GAP 协议">
+                  <i class="fa fa-angle-left"></i> 6. 蓝牙 GAP 协议
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/%E8%93%9D%E7%89%99/8.%20GATT%20%E5%B9%BF%E6%92%AD%E6%95%B0%E6%8D%AE/" rel="next" title="8. GATT 广播数据">
+                  8. GATT 广播数据 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

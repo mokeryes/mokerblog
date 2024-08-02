@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="官方文档 Software Timer Management">
+<meta property="og:type" content="article">
+<meta property="og:title" content="14. 软件定时器（Software Timer）">
+<meta property="og:url" content="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/14.%20%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software%20Timer%EF%BC%89/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="官方文档 Software Timer Management">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/zElements/14._%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software_Timer%EF%BC%89-20240615171747141.webp">
+<meta property="og:image" content="http://example.com/zElements/14._%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software_Timer%EF%BC%89-20240615173910221.webp">
+<meta property="og:image" content="http://example.com/zElements/14._%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software_Timer%EF%BC%89-20240615182443875.webp">
+<meta property="article:published_time" content="2024-08-02T18:41:46.088Z">
+<meta property="article:modified_time" content="2024-08-02T18:41:46.088Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="嵌入式">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="FreeRTOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/zElements/14._%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software_Timer%EF%BC%89-20240615171747141.webp">
+
+
+<link rel="canonical" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/14.%20%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software%20Timer%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/14.%20%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software%20Timer%EF%BC%89/","path":"2024/08/03/Embeded/ESP32/FreeRTOS/14. 软件定时器（Software Timer）/","title":"14. 软件定时器（Software Timer）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>14. 软件定时器（Software Timer） | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">官方文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E5%87%BD%E6%95%B0%E6%96%87%E6%A1%A3"><span class="nav-number">2.</span> <span class="nav-text">官方函数文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">什么是定时器：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%E5%92%8C%E7%A1%AC%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">软件定时器和硬件定时器的区别：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xTimerCreate"><span class="nav-number">5.</span> <span class="nav-text">xTimerCreate()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xTimerStart"><span class="nav-number">6.</span> <span class="nav-text">xTimerStart()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">6.1.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA"><span class="nav-number">6.2.</span> <span class="nav-text">示例输出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xTimerStop"><span class="nav-number">7.</span> <span class="nav-text">xTimerStop()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81-1"><span class="nav-number">7.1.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA-1"><span class="nav-number">7.2.</span> <span class="nav-text">示例输出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E5%87%BD%E6%95%B0%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">官方文档函数参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pcTimerGetName"><span class="nav-number">9.</span> <span class="nav-text">pcTimerGetName()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">9.1.</span> <span class="nav-text">示例代码：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pvGetTimerGetTimerID"><span class="nav-number">10.</span> <span class="nav-text">pvGetTimerGetTimerID()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E6%97%B6%E9%97%B4%E5%AE%9A%E6%97%B6%E5%99%A8%E4%BD%BF%E7%94%A8%E5%90%8C%E4%B8%80%E4%B8%AA%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%EF%BC%8C%E8%8E%B7%E5%8F%96Name%E5%92%8CID%EF%BC%9A"><span class="nav-number">11.</span> <span class="nav-text">两个时间定时器使用同一个回调函数，获取Name和ID：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81-2"><span class="nav-number">11.1.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA-2"><span class="nav-number">11.2.</span> <span class="nav-text">示例输出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xTimerReset"><span class="nav-number">12.</span> <span class="nav-text">xTimerReset()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xTimerChangePeriod"><span class="nav-number">13.</span> <span class="nav-text">xTimerChangePeriod()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%EF%BC%9A-1"><span class="nav-number">13.1.</span> <span class="nav-text">示例代码：</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/14.%20%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software%20Timer%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="14. 软件定时器（Software Timer） | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          14. 软件定时器（Software Timer）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:41:46" itemprop="dateCreated datePublished" datetime="2024-08-03T02:41:46+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FreeRTOS/" itemprop="url" rel="index"><span itemprop="name">FreeRTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h1><blockquote>
+<p>Software Timer Management</p>
+</blockquote>
+<span id="more"></span>
+<p>[[FreeRTOS_Mastering_the_FreeRTOS_Real_Time_Kernel-A_Hands-On_Tutorial_Guide.pdf#page&#x3D;174&amp;selection&#x3D;7,0,7,25|FreeRTOS_Mastering_the_FreeRTOS_Real_Time_Kernel-A_Hands-On_Tutorial_Guide, page 174]]</p>
+<hr>
+<h1 id="官方函数文档"><a href="#官方函数文档" class="headerlink" title="官方函数文档"></a>官方函数文档</h1><blockquote>
+<p>5.3 xTimerCreate()</p>
+</blockquote>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;259&amp;selection&#x3D;2,0,4,14|FreeRTOS_Reference_Manual_V10.0.0, page 259]]</p>
+<hr>
+<h1 id="什么是定时器："><a href="#什么是定时器：" class="headerlink" title="什么是定时器："></a>什么是定时器：</h1><ul>
+<li>定时器就像一个闹钟，在一定时间后会执行相应的程序。</li>
+</ul>
+<h1 id="软件定时器和硬件定时器的区别："><a href="#软件定时器和硬件定时器的区别：" class="headerlink" title="软件定时器和硬件定时器的区别："></a>软件定时器和硬件定时器的区别：</h1><ul>
+<li>硬件定时器：<br>不同的芯片都会提供相应的硬件定时器，而硬件定时器的数量是有限的。</li>
+<li>软件定时器：<br>FreeRTOS 的软件定时器基于<code>Deamon (Time Service) Task</code>，通过定时器命令队列，对定时器任务发送命令，然后定时器任务调用相应的任务程序，执行软件定时器回调函数。</li>
+</ul>
+<p>所以对于软件定时器来说：</p>
+<ol>
+<li>它与硬件无关，与平台无关，在不同平台的 FreeRTOS 的操作系统当中，都是通过同样的函数来调用软件定时器；</li>
+<li>硬件定时器会有相应的数量限制，但是软件定时器会根据（ <code>configTIMER_TASK_STACK_DEPTH</code>）和软件的设置，可以有很多软件定时器。</li>
+</ol>
+<hr>
+<h1 id="xTimerCreate"><a href="#xTimerCreate" class="headerlink" title="xTimerCreate()"></a><code>xTimerCreate()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">TimerHandle_t <span class="title function_">xTimerCreate</span><span class="params">( <span class="type">const</span> <span class="type">char</span> *pcTimerName,</span></span><br><span class="line"><span class="params">						    <span class="type">const</span> TickType_t xTimerPeriod,</span></span><br><span class="line"><span class="params">						    <span class="type">const</span> UBaseType_t uxAutoReload,</span></span><br><span class="line"><span class="params">						    <span class="type">void</span> *<span class="type">const</span> pvTimerID,</span></span><br><span class="line"><span class="params">						    TimerCallbackFunction_t pxCallbackFunction )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>创建一个软件定时器，并返回一个句柄，用该句柄可以引用锁创建的软件定时器。</li>
+<li>每个软件定时器都需要占用一点 RAM ，用来保持软件定时器的状态。<ol>
+<li>如果通过此函数创建了一个软件定时器，那么定时器所需内存将被自动分配在 FreeRTOS 的堆中。</li>
+<li>如果通过<code>xTimerCreateStatic()</code>创建了软件定时器，那么软件定时器所用内存则有程序员所确定。</li>
+</ol>
+</li>
+<li>创建的软件定时器并不会自动运行，这些函数都可以用来启动软件定时器：<ol>
+<li><code>xTimerStart()</code></li>
+<li><code>xTimerStartFromISR()</code></li>
+<li><code>xTimerResetFromISR()</code></li>
+<li><code>xTimerChangePeriod()</code></li>
+<li><code>xTimerChangePeriodFromISR()</code></li>
+</ol>
+</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>pcTimerName:</code>分配给定时器的纯文本名称，纯粹是为了调试。</li>
+<li><code>xTimerPeriod:</code>定时器周期。<ul>
+<li>定时器以滴答周期的倍数指定。<code>pdMS_TO_TICKS()</code>宏可以把以毫秒为单位的时间转换为以刻度为单位的时间。<br>  例如：<ol>
+<li>如果一个时间定时器必须在 100 个刻度到期，<code>xNewPriod</code>可以直接设置为 100。</li>
+<li>如果一个定时器必须在 500ms 后到期，<code>xNewPeriod</code>可以设置为<code>pdMS_TO_TICKS(500)</code>，假设<code>configTICK_RATE_HZ</code>小于等于 1000。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><code>uxAutoReload:</code><ul>
+<li>设置为<code>pdTRUE</code>来定义一个自动重启的定时器。<ul>
+<li>定时器一旦启动，自动重启的定时器将根据<code>xTimerPeriod</code>反复到期。</li>
+</ul>
+</li>
+<li>设置为<code>pdFALSE</code>来定义一个不自动重启的定时器。<ul>
+<li>定时器一旦启动，只会过期一次，只能通过手动的方式重启定时器。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>pvTimerID:</code>分配给定时器的标识符。<ul>
+<li>标识符可以在定时器创建后用<code>vTimerSetTimer()</code>函数更新。</li>
+<li>如果同一个函数被多个定时器回调，定时器标识符可以在回调函数内部调查哪个定时器已到期。此外，定时器标识符可以用在和调用定时器的回调函数之间存储一个值。</li>
+</ul>
+</li>
+<li><code>pxCallbackFunction:</code>定时器过期后调用的回调函数。回调函数必须有被定义的原型。回调函数的返回值必须是<code>void</code>，它的输入参数必须是一个<code>TimerHandle</code>。<blockquote>
+<p><code>void vCallbackFunctionExample( TimerHandle_t xTimer );</code></p>
+</blockquote>
+</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>NULL:</code>软件定时器因为堆中没有足够的内存而无法被创建。</li>
+<li><code>Any other value:</code> 软件定时器成功创建，并且返回一个可以引用此定时器的句柄。</li>
+</ul>
+<h1 id="xTimerStart"><a href="#xTimerStart" class="headerlink" title="xTimerStart()"></a><code>xTimerStart()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">BaseType_t <span class="title function_">xTimerStart</span><span class="params">( TimerHandle_t xTimer, TickType_t xTicksToWait )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>启动软件定时器。<code>xTimerStartFromISR()</code>是一个等效函数，它可以在 中断 中启动定时器。</li>
+<li>如果定时器还没有运行，定时器会计算相对于调用<code>xTimerStart()</code>时的到期时间。</li>
+<li>如果定时器未停止、已删除、未重置，则计时器关联的回调函数将在调用<code>xTimerStart()</code>后的<code>&#39;n&#39;</code>个刻度后被调用，其中<code>&#39;n&#39;</code>是计时器的定义周期。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xTimer:</code>计时器将被重置（reset）、启动（started）或者重启（restarted）。</li>
+<li><code>xTicksToWait:</code>计时器函数并非由 FreeRTOS 的核心函数提供，而是由定时器服务( or deamon )提供。FreeRTOS API 发送命令到定时器任务的队列，如果队列已满，<code>xTicksToWait</code>指定任务处于阻塞状态的最长时间，以等待计时器命令上的队列空间可用，设置为<code>portMAX_DELAY</code>为等待无限多的时间。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>pdPASS:</code>成功启动定时器。</li>
+<li><code>pdFAIL:</code>因为定时器任务的消息队列已满，消息未能在超时时间之内发送到时间定时器的队列。</li>
+</ul>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/queue.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">vCallbackFunction</span><span class="params">(TimerHandle_t timer1)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;[TIMER_1 CALLBACK]: One shot timer.\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 创建一个定时器，定时器名字&quot;Timer 1&quot;，周期1s，周期结束之后重新启动，定时器标识符为0，定时器回调函数为 vCallbackFunction</span></span><br><span class="line">    TimerHandle_t xTimer1 = xTimerCreate(<span class="string">&quot;Timer 1&quot;</span>, pdMS_TO_TICKS(<span class="number">1000</span>), pdTRUE, <span class="number">0</span>, vCallbackFunction);</span><br><span class="line">    <span class="comment">// 启动定时器，等待时间为无限</span></span><br><span class="line">    xTimerStart(xTimer1, portMAX_DELAY);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<h2 id="示例输出"><a href="#示例输出" class="headerlink" title="示例输出"></a>示例输出</h2><p><img src="/zElements/14._%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software_Timer%EF%BC%89-20240615171747141.webp" alt="14._软件定时器（Software_Timer）-20240615171747141.webp"><br>根据输出可以观察到定时器（xTimer1）的回调函数在不断被调用。</p>
+<h1 id="xTimerStop"><a href="#xTimerStop" class="headerlink" title="xTimerStop()"></a><code>xTimerStop()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">BaseType_t <span class="title function_">xTimerStop</span><span class="params">( TimerHandle_t xTimer, TickType_t xTicksToWait )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong> </p>
+<ul>
+<li>停止定时器的运行。<code>xTimerStopISR()</code>的一个等效函数，可以在中断中使用。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xTimer:</code>定时器句柄。</li>
+<li><code>xTicksToWait:</code>超时等待时长。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>pdPASS:</code>成功停止定时器。</li>
+<li><code>pdFAIL:</code>未能成功停止定时器，因为定时器守护任务的消息队列已满。</li>
+</ul>
+<h2 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/queue.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">vCallbackFunction</span><span class="params">(TimerHandle_t timer1)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;[TIMER_1 CALLBACK]: In timer.\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 创建一个定时器，定时器名字&quot;Timer 1&quot;，周期1s，周期结束之后重新启动，定时器标识符为0，定时器回调函数为 vCallbackFunction</span></span><br><span class="line">    TimerHandle_t xTimer1 = xTimerCreate(<span class="string">&quot;Timer 1&quot;</span>, pdMS_TO_TICKS(<span class="number">1000</span>), pdTRUE, <span class="number">0</span>, vCallbackFunction);</span><br><span class="line"></span><br><span class="line">    xTimerStart(xTimer1, portMAX_DELAY);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> delay = <span class="number">5</span>; delay &gt; <span class="number">0</span>; delay--) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[MAIN]: The timer will stoped in %d second(s).\n&quot;</span>, delay);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    xTimerStop(xTimer1, portMAX_DELAY);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<h2 id="示例输出-1"><a href="#示例输出-1" class="headerlink" title="示例输出"></a>示例输出</h2><p><img src="/zElements/14._%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software_Timer%EF%BC%89-20240615173910221.webp" alt="14._软件定时器（Software_Timer）-20240615173910221.webp"><br>定时器在设定<code>for</code>循环结束之后停止。</p>
+<hr>
+<h1 id="官方文档函数参考"><a href="#官方文档函数参考" class="headerlink" title="官方文档函数参考"></a>官方文档函数参考</h1><blockquote>
+<p>271 5.1 pcTimerGetName()</p>
+</blockquote>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;271&amp;selection&#x3D;0,3,4,16|FreeRTOS_Reference_Manual_V10.0.0, page 271]]</p>
+<hr>
+<h1 id="pcTimerGetName"><a href="#pcTimerGetName" class="headerlink" title="pcTimerGetName()"></a><code>pcTimerGetName()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timer.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">char</span> *<span class="title function_">pcTimerGetName</span><span class="params">( TimerHandle_t xTimer )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>返回人类可读的定时器名字。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xTimer:</code>将要取得定时器名字的句柄。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li>返回一个指针，包含定时器的名字。</li>
+</ul>
+<h2 id="示例代码："><a href="#示例代码：" class="headerlink" title="示例代码："></a>示例代码：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/queue.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">vCallbackFunction</span><span class="params">(TimerHandle_t timer1)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *timer_name = pcTimerGetName(timer1);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;[TIMER_1 CALLBACK]: In timer \&quot;%s\&quot;.\n&quot;</span>, timer_name);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 创建一个定时器，定时器名字&quot;Timer 1&quot;，周期1s，周期结束之后重新启动，定时器标识符为0，定时器回调函数为 vCallbackFunction</span></span><br><span class="line">    TimerHandle_t xTimer1 = xTimerCreate(<span class="string">&quot;Timer 1&quot;</span>, pdMS_TO_TICKS(<span class="number">1000</span>), pdTRUE, <span class="number">0</span>, vCallbackFunction);</span><br><span class="line"></span><br><span class="line">    xTimerStart(xTimer1, portMAX_DELAY);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> delay = <span class="number">5</span>; delay &gt; <span class="number">0</span>; delay--) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[MAIN]: The timer will stoped in %d second(s).\n&quot;</span>, delay);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// </span></span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *timer_name = pcTimerGetName(xTimer1);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;[MAIN]: The timer \&quot;%s\&quot; will stop.\n&quot;</span>, timer_name);</span><br><span class="line"></span><br><span class="line">    xTimerStop(xTimer1, portMAX_DELAY);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在实际编写程序时，可以根据定时器名字的不同，来让程序执行不同的代码。</p>
+</blockquote>
+<h1 id="pvGetTimerGetTimerID"><a href="#pvGetTimerGetTimerID" class="headerlink" title="pvGetTimerGetTimerID()"></a><code>pvGetTimerGetTimerID()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timer.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> *<span class="title function_">pvTimerGetTimerID</span><span class="params">( TimerHandle_t xTimer )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>获取定时器的ID。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li>定时器的句柄。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>(void *):</code>时间定时器的ID。<blockquote>
+<p>此处可以用 <code>uint32_t</code>强制转换函数返回值，并用<code>uint32_t</code>来接收返回值。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="两个时间定时器使用同一个回调函数，获取Name和ID："><a href="#两个时间定时器使用同一个回调函数，获取Name和ID：" class="headerlink" title="两个时间定时器使用同一个回调函数，获取Name和ID："></a>两个时间定时器使用同一个回调函数，获取<code>Name</code>和<code>ID</code>：</h1><h2 id="示例代码-2"><a href="#示例代码-2" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/queue.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">callback_function</span><span class="params">(TimerHandle_t timer)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 获取定时器名字</span></span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *timer_name = pcTimerGetName(timer);</span><br><span class="line">	<span class="comment">// 获取定时器ID</span></span><br><span class="line">    <span class="type">uint32_t</span> timer_id = (<span class="type">uint32_t</span>)pvTimerGetTimerID(timer);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;[CALLBACK FUNCTION]: In timer \&quot;%s\&quot;, ID: %ld\n&quot;</span>, timer_name, timer_id);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    TimerHandle_t timer1 = xTimerCreate(<span class="string">&quot;Timer 1&quot;</span>, pdMS_TO_TICKS(<span class="number">1000</span>), pdTRUE, (<span class="type">void</span> *)<span class="number">0</span>, callback_function);</span><br><span class="line">    TimerHandle_t timer2 = xTimerCreate(<span class="string">&quot;Timer 2&quot;</span>, pdMS_TO_TICKS(<span class="number">1000</span>), pdTRUE, (<span class="type">void</span> *)<span class="number">1</span>, callback_function);</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *timer_name = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    xTimerStart(timer1, portMAX_DELAY);</span><br><span class="line">    timer_name = pcTimerGetName(timer1);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> delay = <span class="number">5</span>; delay &gt; <span class="number">0</span>; delay--) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[MAIN]: Timer \&quot;%s\&quot; will stop in %d second(s).\n&quot;</span>, timer_name, delay);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">    xTimerStop(timer1, portMAX_DELAY);</span><br><span class="line"></span><br><span class="line">    xTimerStart(timer2, portMAX_DELAY);</span><br><span class="line">    timer_name = pcTimerGetName(timer2);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> delay = <span class="number">5</span>; delay &gt; <span class="number">0</span>; delay--) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;[MAIN]: Timer \&quot;%s\&quot; will stop in %d second(s).\n&quot;</span>, timer_name, delay);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">    xTimerStop(timer2, portMAX_DELAY);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="示例输出-2"><a href="#示例输出-2" class="headerlink" title="示例输出"></a>示例输出</h2><p><img src="/zElements/14._%E8%BD%AF%E4%BB%B6%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Software_Timer%EF%BC%89-20240615182443875.webp" alt="14._软件定时器（Software_Timer）-20240615182443875.webp"><br>Timer 1 和 Timer 2 分别启动运行停止，因为时间定时器调用了相同的回调函数，所以回调函数打印出了不同的时间定时器名称和ID。</p>
+<h1 id="xTimerReset"><a href="#xTimerReset" class="headerlink" title="xTimerReset()"></a><code>xTimerReset()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timer.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">BaseType_t <span class="title function_">xTimerReset</span><span class="params">( TimerHandle_t xTimer, TickType_t xTicksToWait )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>相当于看门狗的“喂狗”，表示让定时器重新启动。在中断过程中，存在等效函数<code>xTimerResetISR()</code>可以用。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xTimer:</code>时间定时器句柄。</li>
+<li><code>xTicksToWait:</code>超时等待时间。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>pdPASS:</code>重启时间定时器成功。</li>
+<li><code>pdFAIL:</code>重启时间定时器失败。</li>
+</ul>
+<h1 id="xTimerChangePeriod"><a href="#xTimerChangePeriod" class="headerlink" title="xTimerChangePeriod()"></a><code>xTimerChangePeriod()</code></h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;timer.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">BaseType_t <span class="title function_">xTimerChangePeriod</span><span class="params">( TimerHandle_t xTimer, TickType_t xNewPeriod, TickType_t xTicksToWait )</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>函数说明：</strong></p>
+<ul>
+<li>改变定时器的周期，在中断下，存在等效函数<code>xTimerChangePeriodISR()</code>可以用。</li>
+</ul>
+<p><strong>参数：</strong></p>
+<ul>
+<li><code>xTimer:</code>需要改变定时器周期的定时器句柄。</li>
+<li><code>xNewPeriod:</code>新的周期。</li>
+<li><code>xTicksToWait:</code>超时等待时间。</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><code>pdPASS:</code>定时器周期成功修改。</li>
+<li><code>pdFAIL:</code>定时器周期修改失败。</li>
+</ul>
+<h2 id="示例代码：-1"><a href="#示例代码：-1" class="headerlink" title="示例代码："></a>示例代码：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/queue.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/timers.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">callback_function</span><span class="params">(TimerHandle_t timer)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *timer_name = pcTimerGetName(timer);</span><br><span class="line">    <span class="type">uint32_t</span> *timer_id = (<span class="type">uint32_t</span> *)pvTimerGetTimerID(timer);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;[CALLBACK FUNCTION]: In timer \&quot;%s\&quot;, ID: %ld\n&quot;</span>, timer_name, *timer_id);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">uint32_t</span> timer1_id = <span class="number">1</span>;</span><br><span class="line">    TimerHandle_t timer1 = xTimerCreate(<span class="string">&quot;Timer 1&quot;</span>, pdMS_TO_TICKS(<span class="number">1000</span>), pdTRUE, (<span class="type">void</span> *)&amp;timer1_id, callback_function);</span><br><span class="line"></span><br><span class="line">    xTimerStart(timer1, portMAX_DELAY);</span><br><span class="line"></span><br><span class="line">    vTaskDelay(pdMS_TO_TICKS(<span class="number">5000</span>)); <span class="comment">// 让 timer1 运行 5s</span></span><br><span class="line"></span><br><span class="line">    xTimerChangePeriod(timer1, pdMS_TO_TICKS(<span class="number">500</span>), portMAX_DELAY); <span class="comment">// 改变定时器周期</span></span><br><span class="line"></span><br><span class="line">    vTaskDelay(pdMS_TO_TICKS(<span class="number">5000</span>)); <span class="comment">// 再让 timer1 运行 5s</span></span><br><span class="line"></span><br><span class="line">    xTimerStop(timer1, portMAX_DELAY);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+              <a href="/tags/ESP32/" rel="tag"># ESP32</a>
+              <a href="/tags/FreeRTOS/" rel="tag"># FreeRTOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/13.%20%E9%98%9F%E5%88%97%E9%82%AE%E7%AE%B1/" rel="prev" title="13. 队列邮箱">
+                  <i class="fa fa-angle-left"></i> 13. 队列邮箱
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/15.%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88binary%20semaphore%EF%BC%89/" rel="next" title="15. 二进制信号量（binary semaphore）">
+                  15. 二进制信号量（binary semaphore） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

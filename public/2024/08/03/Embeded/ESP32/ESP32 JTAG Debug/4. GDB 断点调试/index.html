@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="xtensa-esp-elf-gdb-3.12 build&#x2F;blink.elf -x gdninit 启动 gdb    可以看到在gdbinit文件中设置在app_main处的硬件断点已经起了作用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4. GDB 断点调试">
+<meta property="og:url" content="http://example.com/2024/08/03/Embeded/ESP32/ESP32%20JTAG%20Debug/4.%20GDB%20%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="xtensa-esp-elf-gdb-3.12 build&#x2F;blink.elf -x gdninit 启动 gdb    可以看到在gdbinit文件中设置在app_main处的硬件断点已经起了作用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621182953176.webp">
+<meta property="og:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621183425587.webp">
+<meta property="og:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621183553757.webp">
+<meta property="og:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621184355123.webp">
+<meta property="og:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621184115299.webp">
+<meta property="og:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621184910642.webp">
+<meta property="og:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621190103598.webp">
+<meta property="article:published_time" content="2024-08-02T18:40:59.230Z">
+<meta property="article:modified_time" content="2024-08-02T18:40:59.230Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="嵌入式">
+<meta property="article:tag" content="GDB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621182953176.webp">
+
+
+<link rel="canonical" href="http://example.com/2024/08/03/Embeded/ESP32/ESP32%20JTAG%20Debug/4.%20GDB%20%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/08/03/Embeded/ESP32/ESP32%20JTAG%20Debug/4.%20GDB%20%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95/","path":"2024/08/03/Embeded/ESP32/ESP32 JTAG Debug/4. GDB 断点调试/","title":"4. GDB 断点调试"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>4. GDB 断点调试 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#xtensa-esp-elf-gdb-3-12-build-blink-elf-x-gdninit"><span class="nav-number">1.</span> <span class="nav-text">xtensa-esp-elf-gdb-3.12 build&#x2F;blink.elf -x gdninit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#list"><span class="nav-number">2.</span> <span class="nav-text">list</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#break-N"><span class="nav-number">3.</span> <span class="nav-text">break N</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#info-break-N"><span class="nav-number">4.</span> <span class="nav-text">info break N</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#continue"><span class="nav-number">5.</span> <span class="nav-text">continue</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#disable-N"><span class="nav-number">6.</span> <span class="nav-text">disable N</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#enable-N"><span class="nav-number">7.</span> <span class="nav-text">enable N</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#delete-N"><span class="nav-number">8.</span> <span class="nav-text">delete N</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#break-filename-N"><span class="nav-number">9.</span> <span class="nav-text">break filename:N</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#break-func"><span class="nav-number">10.</span> <span class="nav-text">break func</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tbreak-N-func"><span class="nav-number">11.</span> <span class="nav-text">tbreak N&#x2F;func</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/03/Embeded/ESP32/ESP32%20JTAG%20Debug/4.%20GDB%20%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="4. GDB 断点调试 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          4. GDB 断点调试
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:40:59" itemprop="dateCreated datePublished" datetime="2024-08-03T02:40:59+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ESP32-JTAG-Debug/" itemprop="url" rel="index"><span itemprop="name">ESP32 JTAG Debug</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="xtensa-esp-elf-gdb-3-12-build-blink-elf-x-gdninit"><a href="#xtensa-esp-elf-gdb-3-12-build-blink-elf-x-gdninit" class="headerlink" title="xtensa-esp-elf-gdb-3.12 build/blink.elf -x gdninit"></a><code>xtensa-esp-elf-gdb-3.12 build/blink.elf -x gdninit</code></h1><ul>
+<li>启动 gdb<br> <img src="/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621182953176.webp" alt="4._GDB_断点调试-20240621182953176.webp"></li>
+</ul>
+<blockquote>
+<p>可以看到在<code>gdbinit</code>文件中设置在<code>app_main</code>处的硬件断点已经起了作用。</p>
+</blockquote>
+<span id="more"></span>
+<blockquote>
+<p>此处打印出了断点处的代码和断点信息。</p>
+</blockquote>
+<h1 id="list"><a href="#list" class="headerlink" title="list"></a><code>list</code></h1><blockquote>
+<p>简化命令：<code>l</code></p>
+</blockquote>
+<ul>
+<li>打印处断点附近的代码。</li>
+</ul>
+<h1 id="break-N"><a href="#break-N" class="headerlink" title="break N"></a><code>break N</code></h1><blockquote>
+<p>简化命令：<code>b N</code></p>
+</blockquote>
+<ul>
+<li>增加断点在代码中的 N 行。<br><img src="/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621183425587.webp" alt="4._GDB_断点调试-20240621183425587.webp"><br>打印出代码，在 99 行处添加断点。</li>
+</ul>
+<h1 id="info-break-N"><a href="#info-break-N" class="headerlink" title="info break N"></a><code>info break N</code></h1><blockquote>
+<p>简化命令：<code>info b N</code></p>
+</blockquote>
+<ul>
+<li>查看当前断点信息。<br><img src="/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621183553757.webp" alt="4._GDB_断点调试-20240621183553757.webp"></li>
+</ul>
+<p>断点信息：</p>
+<ol>
+<li><code>Num:</code>当前断点的序列号。</li>
+<li><code>Type:</code>断点类型。</li>
+<li><code>Disp:</code>触发断点之后，断点是否继续保持。</li>
+<li><code>Enb:</code>Enable &#x2F; Disable，断点 有效 &#x2F; 无效。</li>
+<li><code>Address:</code>断点地址。</li>
+<li><code>What:</code>断点的详细信息。</li>
+</ol>
+<ul>
+<li>用<code>info</code>命令还可以看到断点被触发了多少次<br><img src="/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621184355123.webp" alt="4._GDB_断点调试-20240621184355123.webp"><br>这里可以看到断点目前为止一共被触发了 6 次。</li>
+</ul>
+<h1 id="continue"><a href="#continue" class="headerlink" title="continue"></a><code>continue</code></h1><blockquote>
+<p>简化命令：<code>c</code></p>
+</blockquote>
+<p>继续运行。<br><img src="/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621184115299.webp" alt="4._GDB_断点调试-20240621184115299.webp"><br>代码的运行停止在了99 行的 <code>blink_led()</code>处。</p>
+<h1 id="disable-N"><a href="#disable-N" class="headerlink" title="disable N"></a><code>disable N</code></h1><ul>
+<li>用<code>disable</code>加断点序列号可以不启用某个断点。<br><img src="/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621184910642.webp" alt="4._GDB_断点调试-20240621184910642.webp"><br>可以看到此处断点已不再启用。<br>此时继续程序运行，可以看到 LED 正常闪烁。<blockquote>
+<p>此时可以用<code>Ctrl-c</code>中断代码运行，调试程序会停止在任意代码处。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="enable-N"><a href="#enable-N" class="headerlink" title="enable N"></a><code>enable N</code></h1><ul>
+<li>启用某个断点。</li>
+</ul>
+<h1 id="delete-N"><a href="#delete-N" class="headerlink" title="delete N"></a><code>delete N</code></h1><blockquote>
+<p>简化命令：<code>d N</code></p>
+</blockquote>
+<ul>
+<li>删除某个断点。如果不后缀任何数字，则意味着删除所有断点。</li>
+</ul>
+<h1 id="break-filename-N"><a href="#break-filename-N" class="headerlink" title="break filename:N"></a><code>break filename:N</code></h1><blockquote>
+<p>简化命令：<code>b fiilename:N</code></p>
+</blockquote>
+<ul>
+<li>在某文件某行打断点。</li>
+</ul>
+<p>例如<code>break blink_example_main.c:99</code>。<br>即在此文件 99 行 打断点。</p>
+<h1 id="break-func"><a href="#break-func" class="headerlink" title="break func"></a><code>break func</code></h1><blockquote>
+<p>简化命令：<code>b func</code></p>
+</blockquote>
+<ul>
+<li>在某函数出打断点。<br><img src="/zElements/4._GDB_%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95-20240621190103598.webp" alt="4._GDB_断点调试-20240621190103598.webp"><br>用函数名来断点时，断点会停留在函数的第一行。</li>
+</ul>
+<h1 id="tbreak-N-func"><a href="#tbreak-N-func" class="headerlink" title="tbreak N/func"></a><code>tbreak N/func</code></h1><blockquote>
+<p>简化命令：<code>tb N/func</code></p>
+</blockquote>
+<ul>
+<li>设置临时断点，断点在触发后就会被删除。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+              <a href="/tags/GDB/" rel="tag"># GDB</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/ESP32%20JTAG%20Debug/3.%20GDB/" rel="prev" title="3. GDB">
+                  <i class="fa fa-angle-left"></i> 3. GDB
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/ESP32%20JTAG%20Debug/5.%20GDB%20%E8%A7%82%E5%AF%9F%E6%96%AD%E7%82%B9/" rel="next" title="5. GDB 观察断点">
+                  5. GDB 观察断点 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

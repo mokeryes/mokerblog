@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="官方文档参考 34 2.6 xTaskCreate()  [[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;34&amp;selection&#x3D;0,2,4,13|FreeRTOS_Reference_Manual_V10.0.0, page 34]]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3. FreeRTOS中Task的创建与删除">
+<meta property="og:url" content="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/3.%20FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="官方文档参考 34 2.6 xTaskCreate()  [[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;34&amp;selection&#x3D;0,2,4,13|FreeRTOS_Reference_Manual_V10.0.0, page 34]]">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/zElements/%E6%88%AA%E5%B1%8F2024-06-11_22.33.53.png">
+<meta property="og:image" content="http://example.com/zElements/3._FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4-20240611223816291.webp">
+<meta property="og:image" content="http://example.com/zElements/3._FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4-20240611231955372.webp">
+<meta property="article:published_time" content="2024-08-02T18:42:27.345Z">
+<meta property="article:modified_time" content="2024-08-02T18:42:27.345Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="FreeRTOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/zElements/%E6%88%AA%E5%B1%8F2024-06-11_22.33.53.png">
+
+
+<link rel="canonical" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/3.%20FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/3.%20FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4/","path":"2024/08/03/Embeded/ESP32/FreeRTOS/3. FreeRTOS中Task的创建与删除/","title":"3. FreeRTOS中Task的创建与删除"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>3. FreeRTOS中Task的创建与删除 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">官方文档参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xTaskCreate%EF%BC%9A%E4%BB%BB%E5%8A%A1%E5%88%9B%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">xTaskCreate：任务创建</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">2.1.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA"><span class="nav-number">2.2.</span> <span class="nav-text">示例输出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#vTaskDelete%EF%BC%9A%E4%BB%BB%E5%8A%A1%E5%88%A0%E9%99%A4"><span class="nav-number">3.</span> <span class="nav-text">vTaskDelete：任务删除</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81-1"><span class="nav-number">3.1.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA-1"><span class="nav-number">3.2.</span> <span class="nav-text">示例输出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E7%9A%84%E8%87%AA%E6%88%91%E5%88%A0%E9%99%A4"><span class="nav-number">4.</span> <span class="nav-text">任务的自我删除</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81-2"><span class="nav-number">4.1.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%87%BA-2"><span class="nav-number">4.2.</span> <span class="nav-text">示例输出</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/03/Embeded/ESP32/FreeRTOS/3.%20FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="3. FreeRTOS中Task的创建与删除 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          3. FreeRTOS中Task的创建与删除
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:42:27" itemprop="dateCreated datePublished" datetime="2024-08-03T02:42:27+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FreeRTOS/" itemprop="url" rel="index"><span itemprop="name">FreeRTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="官方文档参考"><a href="#官方文档参考" class="headerlink" title="官方文档参考"></a>官方文档参考</h1><blockquote>
+<p>34 2.6 xTaskCreate()</p>
+</blockquote>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;34&amp;selection&#x3D;0,2,4,13|FreeRTOS_Reference_Manual_V10.0.0, page 34]]</p>
+<span id="more"></span>
+<hr>
+<p>FreeRTOS的任务创建与删除包括：</p>
+<ol>
+<li><p>任务创建 [[3. FreeRTOS中Task的创建与删除#^b63126]]</p>
+</li>
+<li><p>任务删除 [[3. FreeRTOS中Task的创建与删除#^906a4d]]</p>
+</li>
+<li><p>任务的自我删除 [[3. FreeRTOS中Task的创建与删除#^0a1af5]]</p>
+</li>
+</ol>
+<hr>
+<h1 id="xTaskCreate：任务创建"><a href="#xTaskCreate：任务创建" class="headerlink" title="xTaskCreate：任务创建"></a><code>xTaskCreate</code>：任务创建</h1><p>^b63126</p>
+<p><code>task.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BaseType_t <span class="title function_">xTaskCreate</span><span class="params">(    TaskFunction_t pvTaskCode,</span></span><br><span class="line"><span class="params">                           <span class="type">const</span> <span class="type">char</span> * <span class="type">const</span> pcName,</span></span><br><span class="line"><span class="params">                           <span class="type">const</span> [configSTACK_DEPTH_TYPE]</span></span><br><span class="line"><span class="params">                           <span class="type">void</span> *pvParameters,</span></span><br><span class="line"><span class="params">                           UBaseType_t uxPriority,</span></span><br><span class="line"><span class="params">                           TaskHandle_t *pxCreatedTask</span></span><br><span class="line"><span class="params">                         )</span>;</span><br></pre></td></tr></table></figure>
+<p>创建一个新任务并将其添加到准备运行的任务列表中。<code>configSUPPORT_DYNIMIC_ALLOCATION</code>必须在<code>FreeRTOSConfig.h</code>中被设置为 1，或保留为定义状态（此时，它默认为 1），才能使用此RTOS API函数。<br>每个任务都需要RAM来保存任务状态，并由任务用作起堆栈。如果使用<code>xTaskCreateStatic()</code>，则RAM由应用程序编写者提供，因此可以在编译时进行静态分配。<br>如果使用了<code>FreeRTOS-MPU</code>，建议使用<code>xTaskCreateRestricted()</code>而不是<code>xTaskCreate()</code>。</p>
+<p><strong>参数</strong>：<br>*<code>pvTaskCode</code>*：指向任务入口函数的指针（即 实现任务的函数名称）。</p>
+<ul>
+<li>任务通常以无限循环的形式实现；实现任务的函数<strong>绝不能返回或者退出</strong>。但是，任务可以自我删除。[[3. FreeRTOS中Task的创建与删除#^0a1af5]]</li>
+</ul>
+<p>*<code>pcName</code>*：任务的描述性名称。主要是为了方便调试，但也可以用于获取任务句柄。</p>
+<ul>
+<li>任务名称的最大长度由<code>FreeRTOSConfig.h</code>中的<code>configMAX_TASK_LEN</code>定义。</li>
+</ul>
+<p>*<code>uxStackDepth</code>*：要分配用于 任务堆栈的 堆栈。例如：如果任务堆栈的宽度为16位，<code>uxStackDepth</code>为100，则将分配200个字节用于该任务的堆栈；例如，如果堆栈的宽度为32位，<code>uxStackDepth</code>为400，则将分配1600个字节用于该任务的堆栈。[[堆栈宽度与深度]]</p>
+<ul>
+<li><strong>堆栈深度与堆栈宽度的乘积不得超过<code>size_t</code>类型变量所能包含的最大值</strong>。</li>
+</ul>
+<p>*<code>pvParameters</code>*：作为参数传递给创建任务的值。 ^168f8e</p>
+<ul>
+<li>如果<code>pvParameters</code>设置为变量的地址，则在执行创建的任务时该变量必须仍然存在——因此 传递堆栈变量的地址是无效的。[[传递变量给任务的注意事项]]</li>
+<li>次参数类型是一个<code>(void *)</code>类型的指针，可以指向任意类型的变量，使用时注意类型转换。</li>
+</ul>
+<p>*<code>uxPriority</code>*：创建任务执行的优先级。</p>
+<ul>
+<li>包含MPU支持的系统可在特权模式下选择性地创建任务，方法是在<code>uxPriority</code>中设置<code>portPRIVILEGE_BIT</code>位。</li>
+<li>断言优先级低于<code>configMAX_priority</code>，如果未定义<code>configASSET</code>，则优先级会被静默限制为（<code>configMAX_priority - 1</code>）</li>
+<li>低优先级数字表示低优先级任务。 <a target="_blank" rel="noopener" href="https://www.freertos.org/zh-cn-cmn-s/RTOS-idle-task.html">空闲任务</a>的优先级为零 (tskIDLE_PRIORITY)。</li>
+</ul>
+<p>*<code>pxCreatedTask</code>*：用于将句柄传递至由<code>xTaskCreate()</code>函数创建的任务，句柄可以获取当前Task的一些信息。<code>pxCreateTask</code>是可选的，可设置为<code>NULL</code>。</p>
+<p><strong>返回：</strong><br>如果任务创建成功，则返回<code>pdPASS</code>。否则返回<code>errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY</code>。</p>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_chip_info.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">myTask1</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Hello, moker, I&#x27;m in the task1 now!\n&quot;</span>);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello world! It&#x27;s ESP32!\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    TaskHandle_t myHandle1 = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    xTaskCreate(myTask1, <span class="string">&quot;myTask1 say hello&quot;</span>, <span class="number">1024</span>, <span class="literal">NULL</span>, <span class="number">1</span>, &amp;myHandle1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="示例输出"><a href="#示例输出" class="headerlink" title="示例输出"></a>示例输出</h2><p><img src="/zElements/%E6%88%AA%E5%B1%8F2024-06-11_22.33.53.png" alt="截屏2024-06-11_22.33.53.png"><br>可以看到，任务被创建后，正常执行。因为并没有删除任务，所以任务在<code>app_main()</code>返回后仍然在继续执行。接下来删除任务。</p>
+<hr>
+<h1 id="vTaskDelete：任务删除"><a href="#vTaskDelete：任务删除" class="headerlink" title="vTaskDelete：任务删除"></a><code>vTaskDelete</code>：任务删除</h1><p>^906a4d</p>
+<p><code>task.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vTaskDelete</span><span class="params">( TaskHandle_t xTask )</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>INCLUDE_vTaskDelete</code>必须被定义为 1 才能使用此函数。<br>此函数的作用为从RTOS内核管理中移除任务。被删除的任务将从所有的就绪、阻塞、挂起和事件的列表中移除。<br><strong>请注意</strong>，空闲任务负责从已删除任务中释放RTOS内核分配的内存。因此，重要的是，如果应用调用了<code>vTaskCreate()</code>，空闲任务不会失去微控制器的处理时间。任务代码分配的内存不会自动释放，并应在删除任务之前释放。</li>
+</ul>
+<p><strong>参数：</strong><br><em><code>xTask：</code></em> 待删除的任务句柄，传递NULL将导致调用任务被删除。</p>
+<h2 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_chip_info.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">myTask1</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Hello, moker, I&#x27;m in the task1 now!\n&quot;</span>);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">myTask2</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Hello, moker, I&#x27;m in the task2 now!\n&quot;</span>);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello world! It&#x27;s ESP32!\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    TaskHandle_t myHandle1 = <span class="literal">NULL</span>;</span><br><span class="line">    TaskHandle_t myHandle2 = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    xTaskCreate(myTask1, <span class="string">&quot;myTask1 say hello&quot;</span>, <span class="number">1024</span>, <span class="literal">NULL</span>, <span class="number">1</span>, &amp;myHandle1);</span><br><span class="line">    xTaskCreate(myTask2, <span class="string">&quot;myTask2 say hello&quot;</span>, <span class="number">1024</span>, <span class="literal">NULL</span>, <span class="number">1</span>, &amp;myHandle2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待4s后删除任务myTask1</span></span><br><span class="line">    vTaskDelay(<span class="number">2000</span> / portTICK_PERIOD_MS);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (myHandle1 != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        vTaskDelete(myHandle1);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;myTask1 is deleted!\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;myHandle1 is not empty!\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待2s后删除myTask2</span></span><br><span class="line">    <span class="keyword">if</span> (myHandle2 != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        vTaskDelete(myHandle2);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;myTask2 is deleted!\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;myHandle2 is not empty!\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例输出-1"><a href="#示例输出-1" class="headerlink" title="示例输出"></a>示例输出</h2><p><img src="/zElements/3._FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4-20240611223816291.webp" alt="3._FreeRTOS中Task的创建与删除-20240611223816291.webp"><br>可以看到，task1和task2同时开始运行，并且运行2s后删除任务，任务删除完成后才从<code>app_main()</code>返回。</p>
+<hr>
+<h1 id="任务的自我删除"><a href="#任务的自我删除" class="headerlink" title="任务的自我删除"></a>任务的自我删除</h1><p>^0a1af5</p>
+<p>还有一种方法可以删除创建的任务，即 在任务函数内部追加<code>vTaskDelete(NULL)</code>，即可达到任务运行完成后，自己删除自己的目的。</p>
+<h2 id="示例代码-2"><a href="#示例代码-2" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sdkconfig.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;freertos/task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_chip_info.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_flash.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_system.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">myTask1</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> delay = <span class="number">2</span>; <span class="comment">// 设置为2s后自我删除</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (delay--) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Hello, moker, I&#x27;m in the task1 now! Delete in %d second(s).\n&quot;</span>, delay);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    vTaskDelete(<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">myTask2</span><span class="params">(<span class="type">void</span> *pvPara)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> delay = <span class="number">3</span>; <span class="comment">// 设置为3s后自我删除</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (delay--) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Hello, moker, I&#x27;m in the task2 now! Detele in %d second(s)\n&quot;</span>, delay);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span> / portTICK_PERIOD_MS);</span><br><span class="line">    &#125;</span><br><span class="line">    vTaskDelete(<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello world! It&#x27;s ESP32!\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    xTaskCreate(myTask1, <span class="string">&quot;myTask1 say hello&quot;</span>, <span class="number">2048</span>, <span class="literal">NULL</span>, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">    xTaskCreate(myTask2, <span class="string">&quot;myTask2 say hello&quot;</span>, <span class="number">2048</span>, <span class="literal">NULL</span>, <span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="示例输出-2"><a href="#示例输出-2" class="headerlink" title="示例输出"></a>示例输出</h2><p><img src="/zElements/3._FreeRTOS%E4%B8%ADTask%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%A0%E9%99%A4-20240611231955372.webp" alt="3._FreeRTOS中Task的创建与删除-20240611231955372.webp"><br>可以看到，task1在运行2s后自我删除，task2在运行3s后自我删除，<code>app_main</code>在任务完成后返回。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ESP32/" rel="tag"># ESP32</a>
+              <a href="/tags/FreeRTOS/" rel="tag"># FreeRTOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/24.%20%E6%B6%88%E6%81%AF%E7%BC%93%E5%86%B2%E5%8C%BA%EF%BC%88Message%20Buffer%EF%BC%89/" rel="prev" title="24. 消息缓冲区（Message Buffer）">
+                  <i class="fa fa-angle-left"></i> 24. 消息缓冲区（Message Buffer）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/03/Embeded/ESP32/FreeRTOS/4.%20%E4%BB%BB%E5%8A%A1%E7%9A%84%E8%BE%93%E5%85%A5%E5%8F%82%E6%95%B0/" rel="next" title="4. 任务的输入参数">
+                  4. 任务的输入参数 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
