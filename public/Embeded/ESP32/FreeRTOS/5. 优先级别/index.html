@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"moker.blog","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="官方文档参考 129 2.23 uxTaskPriorityGet()">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5. 优先级别">
+<meta property="og:url" content="http://moker.blog/Embeded/ESP32/FreeRTOS/5.%20%E4%BC%98%E5%85%88%E7%BA%A7%E5%88%AB/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="官方文档参考 129 2.23 uxTaskPriorityGet()">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-02T18:42:34.042Z">
+<meta property="article:modified_time" content="2024-08-02T18:42:34.042Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="嵌入式">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="FreeRTOS">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://moker.blog/Embeded/ESP32/FreeRTOS/5.%20%E4%BC%98%E5%85%88%E7%BA%A7%E5%88%AB/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://moker.blog/Embeded/ESP32/FreeRTOS/5.%20%E4%BC%98%E5%85%88%E7%BA%A7%E5%88%AB/","path":"Embeded/ESP32/FreeRTOS/5. 优先级别/","title":"5. 优先级别"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>5. 优先级别 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">官方文档参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">任务相关函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E4%BB%BB%E5%8A%A1%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7"><span class="nav-number">2.1.</span> <span class="nav-text">获取任务的优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E4%BB%BB%E5%8A%A1%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7"><span class="nav-number">2.2.</span> <span class="nav-text">设置任务的优先级</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Priority-Define"><span class="nav-number">3.</span> <span class="nav-text">Priority Define</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Same-Priority"><span class="nav-number">4.</span> <span class="nav-text">Same Priority</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Different-Priority"><span class="nav-number">5.</span> <span class="nav-text">Different Priority</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Modify-Priority"><span class="nav-number">6.</span> <span class="nav-text">Modify Priority</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://moker.blog/Embeded/ESP32/FreeRTOS/5.%20%E4%BC%98%E5%85%88%E7%BA%A7%E5%88%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="5. 优先级别 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          5. 优先级别
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:42:34" itemprop="dateCreated datePublished" datetime="2024-08-03T02:42:34+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FreeRTOS/" itemprop="url" rel="index"><span itemprop="name">FreeRTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="官方文档参考"><a href="#官方文档参考" class="headerlink" title="官方文档参考"></a>官方文档参考</h1><blockquote>
+<p>129 2.23 uxTaskPriorityGet()</p>
+</blockquote>
+<span id="more"></span>
+<p>[[FreeRTOS_Reference_Manual_V10.0.0.pdf#page&#x3D;129&amp;selection&#x3D;0,3,4,19|FreeRTOS_Reference_Manual_V10.0.0, page 129]]</p>
+<hr>
+<ol>
+<li><p>任务相关函数。[[5. 优先级别#^33deb2]]</p>
+</li>
+<li><p><code>Priority Define：</code>优先级别的定义。[[5. 优先级别#^c0fdfa]]</p>
+</li>
+<li><p><code>Same Priority：</code>同样的优先级别下，应用程序时怎样运行的。[[5. 优先级别#^eab7c7]]</p>
+</li>
+<li><p><code>Different Priority：</code>不同的优先级别下，应用程序时怎样运行的。[[5. 优先级别#^2eac7a]]</p>
+</li>
+<li><p><code>Modify Priority：</code>怎样取得任务的优先级别并修改任务的优先级别，让任务在不同的优先级下运行，优先级别翻转。[[5. 优先级别#^62e8f9]]</p>
+</li>
+</ol>
+<hr>
+<h1 id="任务相关函数"><a href="#任务相关函数" class="headerlink" title="任务相关函数"></a>任务相关函数</h1><p>^33deb2</p>
+<h2 id="获取任务的优先级"><a href="#获取任务的优先级" class="headerlink" title="获取任务的优先级"></a>获取任务的优先级</h2><p><code>task.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uBaseType_t <span class="title function_">uxTaskPriorityGet</span><span class="params">( <span class="type">const</span> TaskHandle_t xTask )</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>必须将<code>INCLUDE_ux_TaskPriorityGet</code>和<code>configUSE_MUTEXES</code>定义为<code>1</code>，此函数才可用。</p>
+</blockquote>
+<p>获得任何任务的基本优先级。任务的基本优先级在互斥锁时，为了避免无限优先级倒置而返回的优先级。<br><strong>参数：</strong></p>
+<ul>
+<li><code>xTask：</code>待查询的任务句柄。传递<code>NULL</code>句柄会导致返回调用任务的基本优先级。</li>
+</ul>
+<p><strong>返回：</strong></p>
+<ul>
+<li><code>xTask</code>的基本优先级。</li>
+</ul>
+<h2 id="设置任务的优先级"><a href="#设置任务的优先级" class="headerlink" title="设置任务的优先级"></a>设置任务的优先级</h2><p>^8ea88a</p>
+<p><code>task.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vTaskPrioritySet</span><span class="params">( TaskHandle_t xTask, UBaseType_t uxNewPriority )</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>必须将<code>INCLUDE_ux_TaskPriorityGet</code>和<code>configUSE_MUTEXES</code>定义为<code>1</code>，此函数才可用。</p>
+</blockquote>
+<p>此函数为设置任何任务的优先级。<br>如果正在设置的优先级高于当前优先级，则函数返回之前会发生上下文切换。<br><strong>参数：</strong></p>
+<ul>
+<li><code>xTask：</code>正在设置优先级任务的句柄。空句柄会设置当调用任务的优先级。</li>
+<li><code>uxNewPriority：</code>将要设置任务的优先级。<blockquote>
+<p>断言优先级低于<code>configMAX_priority</code>。如果未定义<code>configASSERT</code>，则优先级会被静默限制为<code>(configMAX_PRIORITIES - 1)</code>。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="Priority-Define"><a href="#Priority-Define" class="headerlink" title="Priority Define"></a>Priority Define</h1><p>^c0fdfa</p>
+<p>每个任务均被分配了从 0 到 <code>(configMAX_PRIORITY - 1)</code>的优先级，这个宏被定义在了<code>freertos/config/include/freertos/</code>的<code>FreeRTOSConfig.h</code>中。<br>文件中显示，可配置的优先级数量为<code>25</code>，因为优先级从<code>0</code>开始，范围为<code>0 ~ 24</code>，一共<code>25</code>个，所以最大优先级是<code>24</code>。</p>
+<blockquote>
+<p>如果将任务优先级改为超过<code>24</code>，程序会崩溃，单片机无限重启。</p>
+</blockquote>
+<h1 id="Same-Priority"><a href="#Same-Priority" class="headerlink" title="Same Priority"></a>Same Priority</h1><p>^eab7c7</p>
+<p>如果任务具有同样的优先级，那么任务会共享CPU的时间，用时间片的方法来使每一个任务得到相同的运行时间。另外，在程序中，哪个任务先创建，就先运行。</p>
+<h1 id="Different-Priority"><a href="#Different-Priority" class="headerlink" title="Different Priority"></a>Different Priority</h1><p>^2eac7a</p>
+<p>如果任务具有不同的优先级，则会优先运行最先创建的任务，其他任务创建完成后，会根据不同任务的优先级来优先运行相对应的任务。</p>
+<h1 id="Modify-Priority"><a href="#Modify-Priority" class="headerlink" title="Modify Priority"></a>Modify Priority</h1><p>^62e8f9</p>
+<p>设置任务优先级。[[5. 优先级别#^8ea88a]]</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+              <a href="/tags/ESP32/" rel="tag"># ESP32</a>
+              <a href="/tags/FreeRTOS/" rel="tag"># FreeRTOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Embeded/ESP32/FreeRTOS/4.%20%E4%BB%BB%E5%8A%A1%E7%9A%84%E8%BE%93%E5%85%A5%E5%8F%82%E6%95%B0/" rel="prev" title="4. 任务的输入参数">
+                  <i class="fa fa-angle-left"></i> 4. 任务的输入参数
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Embeded/ESP32/FreeRTOS/6.%20%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%8C%82%E8%B5%B7%E5%92%8C%E6%81%A2%E5%A4%8D/" rel="next" title="6. 任务的挂起和恢复">
+                  6. 任务的挂起和恢复 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

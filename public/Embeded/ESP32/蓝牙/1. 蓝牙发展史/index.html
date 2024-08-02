@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"moker.blog","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="非盈利协会蓝牙技术联盟成立于1998年，负责发展蓝牙无线通信技术蓝牙1.x版本 1999年发布1.0版本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="1. 蓝牙发展史">
+<meta property="og:url" content="http://moker.blog/Embeded/ESP32/%E8%93%9D%E7%89%99/1.%20%E8%93%9D%E7%89%99%E5%8F%91%E5%B1%95%E5%8F%B2/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="非盈利协会蓝牙技术联盟成立于1998年，负责发展蓝牙无线通信技术蓝牙1.x版本 1999年发布1.0版本">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-02T18:44:42.758Z">
+<meta property="article:modified_time" content="2024-08-02T18:44:42.758Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="简介">
+<meta property="article:tag" content="蓝牙">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://moker.blog/Embeded/ESP32/%E8%93%9D%E7%89%99/1.%20%E8%93%9D%E7%89%99%E5%8F%91%E5%B1%95%E5%8F%B2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://moker.blog/Embeded/ESP32/%E8%93%9D%E7%89%99/1.%20%E8%93%9D%E7%89%99%E5%8F%91%E5%B1%95%E5%8F%B2/","path":"Embeded/ESP32/蓝牙/1. 蓝牙发展史/","title":"1. 蓝牙发展史"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>1. 蓝牙发展史 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%9E%E7%9B%88%E5%88%A9%E5%8D%8F%E4%BC%9A%E8%93%9D%E7%89%99%E6%8A%80%E6%9C%AF%E8%81%94%E7%9B%9F%E6%88%90%E7%AB%8B%E4%BA%8E1998%E5%B9%B4%EF%BC%8C%E8%B4%9F%E8%B4%A3%E5%8F%91%E5%B1%95%E8%93%9D%E7%89%99%E6%97%A0%E7%BA%BF%E9%80%9A%E4%BF%A1%E6%8A%80%E6%9C%AF"><span class="nav-number">1.</span> <span class="nav-text">非盈利协会蓝牙技术联盟成立于1998年，负责发展蓝牙无线通信技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%93%9D%E7%89%991-x%E7%89%88%E6%9C%AC"><span class="nav-number">1.1.</span> <span class="nav-text">蓝牙1.x版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%93%9D%E7%89%992-x%E7%89%88%E6%9C%AC"><span class="nav-number">1.2.</span> <span class="nav-text">蓝牙2.x版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%93%9D%E7%89%993-x%E7%89%88%E6%9C%AC"><span class="nav-number">1.3.</span> <span class="nav-text">蓝牙3.x版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%93%9D%E7%89%994-0%E7%89%88%E6%9C%AC"><span class="nav-number">1.4.</span> <span class="nav-text">蓝牙4.0版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%93%9D%E7%89%995-x%E7%89%88%E6%9C%AC"><span class="nav-number">1.5.</span> <span class="nav-text">蓝牙5.x版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%93%9D%E7%89%99mesh1-0%E7%89%88%E6%9C%AC"><span class="nav-number">1.6.</span> <span class="nav-text">蓝牙mesh1.0版本</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://moker.blog/Embeded/ESP32/%E8%93%9D%E7%89%99/1.%20%E8%93%9D%E7%89%99%E5%8F%91%E5%B1%95%E5%8F%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="1. 蓝牙发展史 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          1. 蓝牙发展史
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-03 02:44:42" itemprop="dateCreated datePublished" datetime="2024-08-03T02:44:42+08:00">2024-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%93%9D%E7%89%99/" itemprop="url" rel="index"><span itemprop="name">蓝牙</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="非盈利协会蓝牙技术联盟成立于1998年，负责发展蓝牙无线通信技术"><a href="#非盈利协会蓝牙技术联盟成立于1998年，负责发展蓝牙无线通信技术" class="headerlink" title="非盈利协会蓝牙技术联盟成立于1998年，负责发展蓝牙无线通信技术"></a>非盈利协会蓝牙技术联盟成立于1998年，负责发展蓝牙无线通信技术</h1><h2 id="蓝牙1-x版本"><a href="#蓝牙1-x版本" class="headerlink" title="蓝牙1.x版本"></a>蓝牙1.x版本</h2><ul>
+<li>1999年发布1.0版本</li>
+</ul>
+<span id="more"></span>
+<pre><code>服务发现(SDP)、电话控制(TCS)
+</code></pre>
+<ul>
+<li><p>2001年发布1.1版本<br>  物理层(PHY)和媒体访问控制(MAC)规范<br>  传输速率0.7Mbps</p>
+</li>
+<li><p>2003年发布1.2版本<br>  屏蔽硬件地址，保护用户免受攻击与跟踪<br>  适应性跳频，达到同频率电磁波抗干扰目的<br>  扩展同步数据传输(eSCO)，对时间敏感类数据的支持，如音频<br>  快速连接</p>
+</li>
+</ul>
+<h2 id="蓝牙2-x版本"><a href="#蓝牙2-x版本" class="headerlink" title="蓝牙2.x版本"></a>蓝牙2.x版本</h2><ul>
+<li>2004年发布2.0版本<br>  EDR：扩展数据率 3Mbps，增强数据传输效率的技术<br>  多任务和多设备同时运行双工模式，可以连接多个蓝牙设备</li>
+<li>2007年发布2.1版本<br>  省电功能，发射频率降低<br>  SSP：安全简单配对</li>
+</ul>
+<h2 id="蓝牙3-x版本"><a href="#蓝牙3-x版本" class="headerlink" title="蓝牙3.x版本"></a>蓝牙3.x版本</h2><ul>
+<li>2009年发布3.0版本<br>  AMP：次要控制器，桥体射频技术<br>  High Speed：传输速率为24Mbps<br>  EPC：增强电源控制，降低待机功耗<br>  UDC：单向广播无连接数据，提高响应能力</li>
+</ul>
+<h2 id="蓝牙4-0版本"><a href="#蓝牙4-0版本" class="headerlink" title="蓝牙4.0版本"></a>蓝牙4.0版本</h2><ul>
+<li>2010年发布4.0版本<br>  BLE：低功耗，响应快，安全加密<br>  出现双模单模，以往的蓝牙控制器为BR&#x2F;EDR，现在出现了BLE控制器，现在的蓝牙同时支持BLE和BR&#x2F;EDR控制器，称为双模</li>
+<li>2013年发布4.1版本<br>  支持云同步<br>  设备互联(蓝牙设备之间的互相连接，不通过PC或手机)，开始布局物联网</li>
+<li>2014年发布4.2版本<br>  传输速度和隐私保护提升<br>  支持IPv6的低速无线个域网(6LoWPAN)，支持IPv6则意味着万物互联成为可能</li>
+</ul>
+<h2 id="蓝牙5-x版本"><a href="#蓝牙5-x版本" class="headerlink" title="蓝牙5.x版本"></a>蓝牙5.x版本</h2><ul>
+<li>2016年发布5.0版本<br>  BLE：更快更远，速度上限2Mbps，理论传输距离300米，包容量是4.2的8倍</li>
+<li>2018年发布5.1版本<br>  AoA到达角和AoD发射角定位</li>
+<li>2020年发布5.2版本<br>  低功耗音频，支持BLE音频，以往音频都是在BR&#x2F;EDR模块下运行<br>  更快更稳定抗干扰性更好</li>
+<li>2021年发布5.3版本<br>  删除AMP，蓝牙放弃了高速传输<br>  增加了广播类型和广播信道以及长度，为了多融合蓝牙设备‘</li>
+</ul>
+<h2 id="蓝牙mesh1-0版本"><a href="#蓝牙mesh1-0版本" class="headerlink" title="蓝牙mesh1.0版本"></a>蓝牙mesh1.0版本</h2><ul>
+<li>2017年发布<br>  让蓝牙设备从个域网到局域网</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%80%E4%BB%8B/" rel="tag"># 简介</a>
+              <a href="/tags/%E8%93%9D%E7%89%99/" rel="tag"># 蓝牙</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Embeded/ESP32/VScode%20+%20Embeded%20%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB%E5%8F%8A%E8%A7%A3%E5%86%B3/%E8%B0%83%E8%AF%95ESP32/" rel="prev" title="调试ESP32">
+                  <i class="fa fa-angle-left"></i> 调试ESP32
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Embeded/ESP32/%E8%93%9D%E7%89%99/10.%20%E5%88%9B%E5%BB%BAGATTS%E6%9C%8D%E5%8A%A1%E6%9D%A5%E6%8E%A7%E5%88%B6%E5%BC%80%E5%8F%91%E6%9D%BF%E4%B8%8A%E7%9A%84LED/" rel="next" title="10. 创建GATTS服务来控制开发板上的LED">
+                  10. 创建GATTS服务来控制开发板上的LED <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
