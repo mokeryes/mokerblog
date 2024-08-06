@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://moker.blog/Programming%20language/C%E8%AF%AD%E8%A8%80/read_bits%E5%87%BD%E6%95%B0%E6%8E%A9%E7%A0%81%E8%8E%B7%E5%8F%96%E5%8F%8A%E8%AE%A1%E7%AE%97/</loc>
+    
+    <lastmod>2024-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://moker.blog/Embeded/ESP32/%E8%93%9D%E7%89%99/9.%20GATT%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%89%AB%E6%8F%8F%E5%92%8C%E5%B9%BF%E6%92%AD/</loc>
     
     <lastmod>2024-08-02</lastmod>
@@ -634,211 +643,211 @@
 
   <url>
     <loc>http://moker.blog/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
-    <loc>http://moker.blog/tags/%E5%A0%86%E6%A0%88/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/C%E8%AF%AD%E8%A8%80/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/%E7%BB%93%E6%9E%84%E4%BD%93/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/clangd/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/tags/neovim/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/ESP32/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/JTAG/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/GDB/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/Openocd/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/clangd/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/tmux/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/TroubleShooting/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/TUI/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/ESPPROG/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/FreeRTOS/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/tags/%E7%AE%80%E4%BB%8B/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/C%E8%AF%AD%E8%A8%80/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/%E8%93%9D%E7%89%99/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/%E6%97%A0%E7%BA%BF%E9%80%9A%E4%BF%A1/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/%E5%A0%86%E6%A0%88/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/NB-IoT/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/LoRa/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/%E7%BB%93%E6%9E%84%E4%BD%93/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/Zigbee/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/GDB/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/WiFi/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/Openocd/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/tags/%E8%93%9D%E7%89%99mesh/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/tags/tmux/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/TroubleShooting/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/TUI/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/FreeRTOS/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/ESP32/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/JTAG/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/%E7%AE%80%E4%BB%8B/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/ESPPROG/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/tags/STM32/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/tags/VScode/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/tags/GD32/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/%E8%93%9D%E7%89%99/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/%E6%97%A0%E7%BA%BF%E9%80%9A%E4%BF%A1/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/NB-IoT/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/LoRa/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/Zigbee/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/WiFi/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/tags/%E8%93%9D%E7%89%99mesh/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/tags/Cortex-debug/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -846,50 +855,50 @@
 
   
   <url>
-    <loc>http://moker.blog/categories/C%E8%AF%AD%E8%A8%80/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/categories/neovim/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://moker.blog/categories/neovim/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <loc>http://moker.blog/categories/C%E8%AF%AD%E8%A8%80/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/categories/ESP32-JTAG-Debug/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/categories/ESP32%E5%A4%96%E8%AE%BE%E4%BD%BF%E7%94%A8/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/categories/FreeRTOS/</loc>
-    <lastmod>2024-08-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://moker.blog/categories/%E8%93%9D%E7%89%99/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://moker.blog/categories/VScode-Embeded-%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB%E5%8F%8A%E8%A7%A3%E5%86%B3/</loc>
-    <lastmod>2024-08-02</lastmod>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/categories/%E8%93%9D%E7%89%99/</loc>
+    <lastmod>2024-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://moker.blog/categories/ESP32%E5%A4%96%E8%AE%BE%E4%BD%BF%E7%94%A8/</loc>
+    <lastmod>2024-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
