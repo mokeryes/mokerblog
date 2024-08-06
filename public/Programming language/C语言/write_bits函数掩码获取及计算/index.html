@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"moker.blog","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="写在前面嵌入式当中，使用例如i2c、spi等外设时，需要对寄存器中的某些连续位进行写入操作，而不影响其他位，本文来探讨如何实现。  需求现在有数据要求写入到寄存器，从第 3 位开始，连续写入 4 位的数据。写入的数据为：1100，我们假设寄存器原始数据为：0110 1100。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="write_bits函数掩码获取及计算">
+<meta property="og:url" content="http://moker.blog/Programming%20language/C%E8%AF%AD%E8%A8%80/write_bits%E5%87%BD%E6%95%B0%E6%8E%A9%E7%A0%81%E8%8E%B7%E5%8F%96%E5%8F%8A%E8%AE%A1%E7%AE%97/index.html">
+<meta property="og:site_name" content="Moker Blog">
+<meta property="og:description" content="写在前面嵌入式当中，使用例如i2c、spi等外设时，需要对寄存器中的某些连续位进行写入操作，而不影响其他位，本文来探讨如何实现。  需求现在有数据要求写入到寄存器，从第 3 位开始，连续写入 4 位的数据。写入的数据为：1100，我们假设寄存器原始数据为：0110 1100。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-06T15:13:19.732Z">
+<meta property="article:modified_time" content="2024-08-06T15:13:19.732Z">
+<meta property="article:author" content="Moker">
+<meta property="article:tag" content="C语言">
+<meta property="article:tag" content="位运算">
+<meta property="article:tag" content="嵌入式">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://moker.blog/Programming%20language/C%E8%AF%AD%E8%A8%80/write_bits%E5%87%BD%E6%95%B0%E6%8E%A9%E7%A0%81%E8%8E%B7%E5%8F%96%E5%8F%8A%E8%AE%A1%E7%AE%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://moker.blog/Programming%20language/C%E8%AF%AD%E8%A8%80/write_bits%E5%87%BD%E6%95%B0%E6%8E%A9%E7%A0%81%E8%8E%B7%E5%8F%96%E5%8F%8A%E8%AE%A1%E7%AE%97/","path":"Programming language/C语言/write_bits函数掩码获取及计算/","title":"write_bits函数掩码获取及计算"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>write_bits函数掩码获取及计算 | Moker Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Moker Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9C%80%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%8E%A9%E7%A0%81"><span class="nav-number">3.1.</span> <span class="nav-text">获取掩码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8bits-len%E6%9D%A5%E8%8E%B7%E5%8F%96%E6%8E%A9%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">用bits_len来获取掩码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%86%E6%8E%A9%E7%A0%81-mask-%E5%B7%A6%E7%A7%BB-bits-start-1%E4%BD%8D"><span class="nav-number">3.3.</span> <span class="nav-text">将掩码 mask 左移 bits_start - 1位</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%86%E6%8E%A9%E7%A0%81mask%E5%8F%96%E5%8F%8D"><span class="nav-number">3.4.</span> <span class="nav-text">将掩码mask取反</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%85%E9%99%A4%E5%86%99%E5%85%A5%E4%BD%8D"><span class="nav-number">3.5.</span> <span class="nav-text">清除写入位</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bits-data%E5%B7%A6%E7%A7%BB"><span class="nav-number">3.6.</span> <span class="nav-text">bits_data左移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%88%E5%B9%B6%E6%95%B0%E6%8D%AE"><span class="nav-number">3.7.</span> <span class="nav-text">合并数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.</span> <span class="nav-text">代码示例</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Moker</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://moker.blog/Programming%20language/C%E8%AF%AD%E8%A8%80/write_bits%E5%87%BD%E6%95%B0%E6%8E%A9%E7%A0%81%E8%8E%B7%E5%8F%96%E5%8F%8A%E8%AE%A1%E7%AE%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Moker">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="write_bits函数掩码获取及计算 | Moker Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          write_bits函数掩码获取及计算
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-06 23:13:19" itemprop="dateCreated datePublished" datetime="2024-08-06T23:13:19+08:00">2024-08-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">C语言</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>嵌入式当中，使用例如<code>i2c</code>、<code>spi</code>等外设时，需要对寄存器中的某些连续位进行写入操作，而不影响其他位，本文来探讨如何实现。</p>
+<hr>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>现在有数据要求写入到寄存器，从第 3 位开始，连续写入 4 位的数据。写入的数据为：<code>1100</code>，我们假设寄存器原始数据为：<code>0110 1100</code>。</p>
+<span id="more"></span>
+
+<p>我们定义从第 3 位开始为：<code>uint8_t bits_start = 0x3;</code>。</p>
+<p>写入 4 位数据定义为：<code>uint8_t bits_len = 0x4;</code>。</p>
+<p>寄存器原始数据为：<code>uint8_t data = 0b01101100;</code>，即：<code>uint8_t data = 0x6C;</code>。</p>
+<p>准备写入的数据为：<code>uint8_t bits_data = 0b1100;</code>。</p>
+<hr>
+<p><strong>注：这里我们在描述寄存器的位时，所用的方式是不同的，注意不要混淆。</strong></p>
+<ul>
+<li>使用“第 N 位”时，我们从 1 开始计算比特位。</li>
+<li>使用<code>bitN</code>时，我们从 0 开始计算比特位。</li>
+</ul>
+<p>例如：</p>
+<ul>
+<li>自然语言索引二进制比特位。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">. <span class="number">0.</span>    <span class="number">1.</span>    <span class="number">1.</span>    <span class="number">0.</span>     <span class="number">1.</span>    <span class="number">1.</span>    <span class="number">0.</span>    <span class="number">0</span></span><br><span class="line">第八位 第七位 第六位 第五位  第四位 第三位 第二位 第一位</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>用<code>BitN</code>来索引二进制比特位。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.     <span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0.</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span></span><br><span class="line">bitN. <span class="number">7</span> <span class="number">6</span> <span class="number">5</span> <span class="number">4</span>  <span class="number">3</span> <span class="number">2</span> <span class="number">1</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><h2 id="获取掩码"><a href="#获取掩码" class="headerlink" title="获取掩码"></a>获取掩码</h2><p>因为我们需要用掩码来对寄存器原始数据相应的位被清除为 0，这里，相应的位是：从第 3 位开始，写入 4 位数据，即：从<code>bit2</code>到<code>bit5</code>。</p>
+<h2 id="用bits-len来获取掩码"><a href="#用bits-len来获取掩码" class="headerlink" title="用bits_len来获取掩码"></a>用<code>bits_len</code>来获取掩码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">uint8_t</span> mask = ((<span class="number">1</span> &lt;&lt; bits_len) - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">这里 bits_len = <span class="number">4</span></span><br><span class="line"></span><br><span class="line">让 <span class="number">1</span> 向左移 <span class="number">4</span> 位：</span><br><span class="line">	<span class="number">1</span> &lt;&lt; <span class="number">4.</span> -&gt;. <span class="number">1</span> <span class="number">0000</span>，补全 <span class="number">8</span> 位为：<span class="number">0001</span> <span class="number">0000</span></span><br><span class="line"></span><br><span class="line">将 mask 减去 <span class="number">1</span>：</span><br><span class="line">	二进制 <span class="number">0001</span> <span class="number">0000</span> 转换为十六进制为：<span class="number">0x10</span></span><br><span class="line">	<span class="number">0x10</span> 减去 <span class="number">1</span> 为：<span class="number">0x10</span> - <span class="number">0x1</span> = <span class="number">0xF</span></span><br><span class="line">	<span class="number">0xF</span> 转换为二进制为： <span class="number">1111</span></span><br></pre></td></tr></table></figure>
+
+<p>通过上面代码我们可以获取掩码为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1111</span></span><br></pre></td></tr></table></figure>
+
+<p>这里我们得到了长度为<code>bits_len</code>的掩码。接下来我们将对他移动到对应比特写入的位置。</p>
+<h2 id="将掩码-mask-左移-bits-start-1位"><a href="#将掩码-mask-左移-bits-start-1位" class="headerlink" title="将掩码 mask 左移 bits_start - 1位"></a>将掩码 mask 左移 <code>bits_start - 1</code>位</h2><p>已知<code>bits_start = 3</code>，所以需要将 <code>mask</code>左移<code>3 - 1 = 2</code>位。</p>
+<p>将<code>mask</code>左移<code>2</code>位：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">1111</span></span><br><span class="line"><span class="number">0011</span> <span class="number">1100</span></span><br></pre></td></tr></table></figure>
+
+<p>我们得到<code>~mask = 0011 1100</code>。我们已经将掩码移动到了合适的位置，接下来我们将对掩码取反，目的是清除寄存器原始数据中需要修改的比特位。</p>
+<h2 id="将掩码mask取反"><a href="#将掩码mask取反" class="headerlink" title="将掩码mask取反"></a>将掩码<code>mask</code>取反</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ <span class="number">0011</span> <span class="number">1100</span>  =. <span class="number">1100</span> <span class="number">0011</span></span><br></pre></td></tr></table></figure>
+
+<p>我们得到了最终掩码，现在可以用它来清除寄存器原始数据中需要清除的位。</p>
+<h2 id="清除写入位"><a href="#清除写入位" class="headerlink" title="清除写入位"></a>清除写入位</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data = <span class="number">0110</span> <span class="number">1100</span></span><br><span class="line">mask = <span class="number">1100</span> <span class="number">0011</span></span><br></pre></td></tr></table></figure>
+
+<p>我们对他们进行按位与计算：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">. <span class="number">0110</span> <span class="number">1100</span> (data)</span><br><span class="line">&amp; <span class="number">1100</span> <span class="number">0011</span> (mask)</span><br><span class="line">-------------------</span><br><span class="line">. <span class="number">0100</span> <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>解释：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">可以看到，寄存器的原始数据为：</span><br><span class="line"><span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span>  <span class="number">1</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span></span><br><span class="line">.   ^.^  ^.^</span><br></pre></td></tr></table></figure>
+
+<p>我们需要从第 3 位开始写入，连续写 4 位。正如我标记的一样。然而，我们既然需要重新写入这些位的数据，就要清除当前位原来的数据对吧。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span>  <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，我们清除掉相应的位之后，得到的结果和 用掩码来处理 的结果一样。</p>
+</blockquote>
+<p>我们已经得到了处理好的寄存器数据，接下来只需要将<code>bits_data</code>数据整合到<code>data</code>中就可以了。</p>
+<h2 id="bits-data左移"><a href="#bits-data左移" class="headerlink" title="bits_data左移"></a><code>bits_data</code>左移</h2><p>我们已知<code>bits_data = 1100</code>。现在将其左移到用掩码清空的位置。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">uint8_t</span> bits_data = <span class="number">1100</span>;</span><br><span class="line"></span><br><span class="line">我们将其左移 (bits_start - <span class="number">1</span>) 个位</span><br><span class="line"></span><br><span class="line"><span class="number">1100</span> &lt;&lt; (bits_start - <span class="number">1</span>)  -&gt;. <span class="number">1100</span> &lt;&lt; <span class="number">2</span>  -&gt;  <span class="number">0011</span> <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<p>我们得到数据有效位和掩码处理过的位相对应的二进制数据。接下来只需要简单的将<code>bits_data</code>和<code>data</code>按位或操作即可。</p>
+<h2 id="合并数据"><a href="#合并数据" class="headerlink" title="合并数据"></a>合并数据</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">. <span class="number">0011</span> <span class="number">0000.</span> (bits_data)</span><br><span class="line">| <span class="number">0100</span> <span class="number">0000.</span> (data)</span><br><span class="line">-------------------------</span><br><span class="line">. <span class="number">0111</span> <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<p>我们得到了最终数据，可知直接将其写入到寄存器中，而不对其他位产生影响。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">data = <span class="number">0110</span> <span class="number">1100.</span> 从寄存器读出来的数据</span><br><span class="line">bits_start = <span class="number">0x3</span>  从第三位开始</span><br><span class="line">bits_len = <span class="number">0x4</span>    写入四位的数据</span><br><span class="line">bits_data = <span class="number">1100</span>  将要写入的数据</span><br><span class="line"></span><br><span class="line">data: <span class="number">0</span> <span class="number">1</span>   <span class="number">1</span>     <span class="number">0</span>     <span class="number">1</span>     <span class="number">1</span> <span class="number">0</span> <span class="number">0</span></span><br><span class="line">            ^     ^     ^     ^</span><br><span class="line">          第六位 第五位 第四位 第三位</span><br><span class="line">bits_data:  <span class="number">1.</span>    <span class="number">1.</span>    <span class="number">0.</span>    <span class="number">0.</span> 用 bits_data 替换相应位</span><br><span class="line"></span><br><span class="line">得：</span><br><span class="line"><span class="number">0111</span> <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">uint8_t</span> value)</span> &#123;</span><br><span class="line">  <span class="type">char</span> binary_str[<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">  <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">7</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    binary_str[index++] = (value &amp; (<span class="number">1</span> &lt;&lt; i)) ? <span class="string">&#x27;1&#x27;</span> : <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (i == <span class="number">4</span>) &#123;</span><br><span class="line">      binary_str[index++] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, binary_str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">write_bits</span><span class="params">(<span class="type">uint8_t</span> bits_start, <span class="type">uint8_t</span> bits_len, <span class="type">uint8_t</span> bits_data)</span> &#123;</span><br><span class="line">  <span class="type">uint8_t</span> mask = <span class="number">0x00</span>;</span><br><span class="line">  <span class="type">uint8_t</span> final_data = <span class="number">0x00</span>;</span><br><span class="line">  <span class="type">uint8_t</span> data = <span class="number">0b01101100</span>; <span class="comment">// 0x6C</span></span><br><span class="line"></span><br><span class="line">  mask = ~(((<span class="number">1</span> &lt;&lt; bits_len) - <span class="number">1</span>) &lt;&lt; (bits_start - <span class="number">1</span>)); <span class="comment">// 取掩码</span></span><br><span class="line">  data &amp;= mask;                                        <span class="comment">// 清零写入位</span></span><br><span class="line">  bits_data &lt;&lt;= (bits_start - <span class="number">1</span>); <span class="comment">// 写入数据移动到写入位</span></span><br><span class="line">  bits_data |= data;              <span class="comment">// 合并数据</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;bits_data: \t&quot;</span>);</span><br><span class="line">  print_binary(bits_data);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">  <span class="type">uint8_t</span> bits_start = <span class="number">3</span>;</span><br><span class="line">  <span class="type">uint8_t</span> bits_len = <span class="number">4</span>;</span><br><span class="line">  <span class="type">uint8_t</span> bits_data = <span class="number">0b1100</span>; <span class="comment">// 0xC</span></span><br><span class="line"></span><br><span class="line">  write_bits(bits_start, bits_len, bits_data);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C%E8%AF%AD%E8%A8%80/" rel="tag"># C语言</a>
+              <a href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" rel="tag"># 位运算</a>
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Programming%20language/C%E8%AF%AD%E8%A8%80/read_bits%E5%87%BD%E6%95%B0%E6%8E%A9%E7%A0%81%E8%8E%B7%E5%8F%96%E5%8F%8A%E8%AE%A1%E7%AE%97/" rel="prev" title="read_bits函数掩码获取及计算">
+                  <i class="fa fa-angle-left"></i> read_bits函数掩码获取及计算
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Moker</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
